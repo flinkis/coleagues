@@ -33,6 +33,17 @@ app.get('*', (req, res) => {
   res.sendFile(__dirname + '/build/index.html');
 });
 
+/******************
+ *
+ * Set up connection to Redis
+ *
+ *****************/
+let redis = null;
+if (process.env.REDIS_URL) {
+  redis = require('redis').createClient(process.env.REDIS_URL);
+} else {
+  redis = require('redis').createClient();
+}
 
 /*************************************************************
  *
@@ -73,15 +84,3 @@ const server = app.listen(port, () => {
 
   console.log('Essential React listening at http://%s:%s', host, port);
 });
-
-/******************
- *
- * Set up connection to Redis
- *
- *****************/
-let redis = null;
-if (process.env.REDIS_URL) {
-  redis = require('redis').createClient(process.env.REDIS_URL);
-} else {
-  redis = require('redis').createClient();
-}
