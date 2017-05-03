@@ -1,7 +1,6 @@
 import express from 'express';
 const app = express();
 
-
 /************************************************************
  *
  * Express routes for:
