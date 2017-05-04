@@ -21,8 +21,8 @@ const DOM_APP_EL_ID = 'app';
 
 // Render the router
 ReactDOM.render((
-  <Router history={browserHistory}>
-    {Routes}
-  </Router>
+    <Router history={browserHistory}>
+        {Routes}
+    </Router>
 ), document.getElementById(DOM_APP_EL_ID));
 

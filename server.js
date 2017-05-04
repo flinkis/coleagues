@@ -33,18 +33,6 @@ app.get('*', (req, res) => {
   res.sendFile(__dirname + '/build/index.html');
 });
 
-/******************
- *
- * Set up connection to Redis
- *
- *****************/
-let redis = null;
-if (process.env.REDIS_URL) {
-  redis = require('redis').createClient(process.env.REDIS_URL);
-} else {
-  redis = require('redis').createClient();
-}
-
 /*************************************************************
  *
  * Webpack Dev Server
@@ -62,6 +50,7 @@ if (!process.env.PRODUCTION) {
     publicPath: config.output.publicPath,
     hot: true,
     noInfo: true,
+    headers: { "Access-Control-Allow-Origin": "*" },
     historyApiFallback: true
   }).listen(9090, 'localhost', (err, result) => {
     if (err) {
@@ -82,5 +71,5 @@ const server = app.listen(port, () => {
   const host = server.address().address;
   const port = server.address().port;
 
-  console.log('Essential React listening at http://%s:%s', host, port);
+  console.log('Listening at http://%s:%s', host, port);
 });

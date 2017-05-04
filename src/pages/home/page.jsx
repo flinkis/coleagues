@@ -6,7 +6,7 @@ export default class HomePage extends React.Component {
     return (
       <div className={styles.content}>
         <h1>Home Page</h1>
-        <p className={styles.welcomeText}>Thanks for joining!</p>
+        <p className={styles.welcomeText}>Thanks for being you!</p>
       </div>
     );
   }

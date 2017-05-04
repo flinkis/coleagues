@@ -5,7 +5,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
  * This is the Webpack configuration file for production.
  */
 module.exports = {
-  entry: "./src/main",
+  entry: "./src/main.jsx",
 
   output: {
     path: __dirname + "/build/",
@@ -13,7 +13,13 @@ module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin('style.css', { allChunks: true })
+    new ExtractTextPlugin('style.css', { allChunks: true }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: options.devtool && (options.devtool.indexOf("sourcemap") >= 0 || options.devtool.indexOf("source-map") >= 0)
+    })
   ],
 
   module: {
