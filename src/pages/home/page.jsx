@@ -8,15 +8,28 @@ var socket = io.connect();
 export default class HomePage extends React.Component {
     constructor(props) {
         super(props);
+    
+        this.state = {
+            loggedIn: false
+        };
+    }
+
+    componentWillMount() {
+       
+    }
+
+    setUserStatus(isLoggedIn) {
+        this.setState({
+            loggedIn: isLoggedIn
+        });
     }
 
     render() {
         return (
             <div className={styles.content}>
-                <h1>Home Page</h1>
-                Hello User.
+                <h1>{!this.state.loggedIn ? 'Log In' : 'Hello User'}</h1> 
                 <p className={styles.welcomeText}>Thanks for being you!</p>
-                <User />
+                {!this.state.loggedIn && <User updateUserStatus={this.setUserStatus.bind(this)} />}
             </div>
         );
     }
