@@ -35,11 +35,12 @@ class LogInForm extends React.Component {
         return (
             <div>
                 <form onSubmit={this.onFormSubmit.bind(this)}>
-                    <label>user:</label>
+                    <label>User Name:</label>
                     <input type="text" name="user" placeholder="user" value={this.state.newName} onChange={this.onNameChange.bind(this)}/>
-                    
+                    <br />
                     <label>Password:</label>
                     <input type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onPasswordChange.bind(this)}/>
+                    <br />
                     <button type="submit">Log In</button>
                 </form>
             </div>

@@ -10,7 +10,8 @@ export default class HomePage extends React.Component {
         super(props);
         
         this.state = {
-            users: []
+            users: [],
+            loggedIn: false
         };
         this.socket = io.connect();
     }
@@ -18,9 +19,12 @@ export default class HomePage extends React.Component {
     render() {
         return (
             <div className={styles.content}>
-                <h1>{!this.state.loggedIn ? 'Log In' : 'Hello User'}</h1> 
+                <h1>{!this.state.loggedIn ? 'Log In' : 'Hello ' + this.state.user}</h1> 
                 <Users users={this.state.users} />
-                <LogInForm onChangeName={this.handleChangeName.bind(this)} />
+                {!this.state.loggedIn ? 
+                    <LogInForm onChangeName={this.handleChangeName.bind(this)} /> :
+                    <button onClick={this.handleLogout.bind(this)}>Log out</button>
+                }
             </div>
         );
     }
@@ -41,15 +45,21 @@ export default class HomePage extends React.Component {
         var {users} = this.state;
         var {name} = data;
         users.push(name);
-        this.setState({users});
+        this.setState({
+            users, 
+            loggedIn: true
+        });
     }
 
     userLeft(data) {
-        var {users, messages} = this.state;
+        var {users} = this.state;
         var {name} = data;
         var index = users.indexOf(name);
         users.splice(index, 1);
-        this.setState({users});
+        this.setState({
+            users, 
+            loggedIn: false
+        });
     }
 
     userChangedName(data) {
@@ -57,7 +67,10 @@ export default class HomePage extends React.Component {
         var {users} = this.state;
         var index = users.indexOf(oldName);
         users.splice(index, 1, newName);
-        this.setState({users});
+        this.setState({
+            users, 
+            loggedIn: true
+        });
     }
 
     handleChangeName(newName) {
@@ -71,5 +84,9 @@ export default class HomePage extends React.Component {
             users.splice(index, 1, newName);
             this.setState({users, user: newName});
         });
+    }
+
+    handleLogout() {
+        this.socket.emit('disconnect', {name: this.state.user});
     }
 }

@@ -24,8 +24,7 @@ const UserNames = {
     },
 
     get() {
-        let res = this.names.map(item => item);
-        return res;
+        return this.names;
     },
 
     free(name) {
@@ -37,10 +36,8 @@ const UserNames = {
 
 // export function for listening to the socket
 module.exports = function (socket) {
-    let name = UserNames.getGuestName();
-
     socket.emit('init', {
-        name: name,
+        name: UserNames.getGuestName(),
         users: UserNames.get()
     });
 
@@ -65,10 +62,10 @@ module.exports = function (socket) {
         }
     });
 
-    socket.on('disconnect', function () {
+    socket.on('disconnect', function (data) {
         socket.broadcast.emit('user:left', {
-            name: name
+            name: data.name
         });
-        UserNames.free(name);
+        UserNames.free(data.name);
     });
 };
