@@ -1,51 +1,38 @@
 // Keep track of which names are used so that there are no duplicates
-const UserNames = () => {
-    let names = {};
+const UserNames = {
+    names: [],
 
-    let claim = function (name) {
-        if (!name || names[name]) {
+    claim(name) {
+        if (!name || this.names[name]) {
             return false;
         } else {
-            names[name] = true;
+            this.names[name] = true;
             return true;
         }
-    };
+    },
 
-    // find the lowest unused "guest" name and claim it
-    const getGuestName = function () {
+    getGuestName() {
         let name,
-        nextUserId = 1;
+            nextUserId = 1;
 
         do {
             name = 'Guest ' + nextUserId;
             nextUserId += 1;
-        } while (!claim(name));
+        } while (!this.claim(name));
 
         return name;
-    };
+    },
 
-    // serialize claimed names as an array
-    const get = function () {
-        let res = [];
-        for (user in names) {
-            res.push(user);
-        }
-
+    get() {
+        let res = this.names.map(item => item);
         return res;
-    };
+    },
 
-    const free = function (name) {
-        if (names[name]) {
-            delete names[name];
+    free(name) {
+        if (this.names[name]) {
+            delete this.names[name];
         }
-    };
-
-    return {
-        claim: claim,
-        free: free,
-        get: get,
-        getGuestName: getGuestName
-    };
+    }
 };
 
 // export function for listening to the socket

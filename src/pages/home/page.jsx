@@ -1,7 +1,9 @@
 import React from "react";
 import styles from "./style.css";
-import NumberTilte from "../../common/components/title/title";
+import User from "../../common/components/User";
+import io from 'socket.io-client';
 
+var socket = io.connect();
 
 export default class HomePage extends React.Component {
     constructor(props) {
@@ -12,8 +14,9 @@ export default class HomePage extends React.Component {
         return (
             <div className={styles.content}>
                 <h1>Home Page</h1>
-                <NumberTilte number={3} />
+                Hello User.
                 <p className={styles.welcomeText}>Thanks for being you!</p>
+                <User />
             </div>
         );
     }
