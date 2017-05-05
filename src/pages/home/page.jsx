@@ -1,11 +1,12 @@
 import React from "react";
 import styles from "./style.css";
 import User from "../../common/components/User";
+import {Link} from "react-router";
 
 export default class HomePage extends React.Component {
     constructor(props) {
         super(props);
-    
+
         this.state = {
             loggedIn: false
         };
@@ -27,6 +28,8 @@ export default class HomePage extends React.Component {
                 <h1>{!this.state.loggedIn ? 'Log In' : 'Hello User'}</h1> 
                 <p className={styles.welcomeText}>Thanks for being you!</p>
                 {!this.state.loggedIn && <User updateUserStatus={this.setUserStatus.bind(this)} />}
+            
+                {this.state.loggedIn && <Link to="/match">Create Match</Link>}
             </div>
         );
     }
