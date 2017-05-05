@@ -73,3 +73,9 @@ const server = app.listen(port, () => {
 
   console.log('Listening at http://%s:%s', host, port);
 });
+
+const io = require('socket.io')(server);
+const socket = require('./src/socket.js');
+
+io.sockets.on('connection', socket);
+
