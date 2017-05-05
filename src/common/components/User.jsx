@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class User extends React.Component {
 	constructor(props) {
@@ -6,19 +7,20 @@ class User extends React.Component {
 		
 		this.state = {
 			username: '',
-			password: '',
-			loggedIn: false
+			password: ''
 		};
 	}
 
 	onFormSubmit(event) {
 		event.preventDefault();
 
-		this.setState({
-			loggedIn: (this.state.username !== '' && this.state.password !== '')
-		});
+		let isLoggedIn = (this.state.username !== '' && this.state.password !== '');
 
-		console.log(this.state.loggedIn);
+		this.props.updateUserStatus(isLoggedIn);
+		
+		if (window.localStorage.getItem('isLoggedIn') === null) {
+			window.localStorage.setItem('isLoggedIn', isLoggedIn);
+		}
 	}
 
 	onUsernameChange(event) {
@@ -47,6 +49,10 @@ class User extends React.Component {
 			</div>
 		);
 	}
+}
+
+User.PropTypes = {
+	updateUserStatus: PropTypes.func
 }
 
 export default User;
