@@ -1,5 +1,6 @@
 import React from "react";
 import io from 'socket.io-client';
+import {Link} from "react-router";
 
 import styles from "./style.css";
 import LogInForm from "../../common/components/form/login";
@@ -8,7 +9,7 @@ import Users from "../../common/components/users";
 export default class HomePage extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             users: [],
             loggedIn: false
