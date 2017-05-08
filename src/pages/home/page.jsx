@@ -14,16 +14,20 @@ export default class HomePage extends React.Component {
             loggedIn: false
         };
         this.socket = io.connect();
+
+        this.handleChangeName = this.handleChangeName.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
     }
 
     render() {
+        const {users, name, loggedIn} = this.state;
         return (
             <div className={styles.content}>
-                <h1>{!this.state.loggedIn ? 'Log In' : 'Hello ' + this.state.user}</h1> 
-                <Users users={this.state.users} />
-                {!this.state.loggedIn ? 
-                    <LogInForm onChangeName={this.handleChangeName.bind(this)} /> :
-                    <button onClick={this.handleLogout.bind(this)}>Log out</button>
+                <h1>{!this.state.loggedIn ? 'Log In' : 'Hello ' + name}</h1> 
+                <Users users={users} />
+                {!loggedIn ? 
+                    <LogInForm onChangeName={this.handleChangeName} /> :
+                    <button onClick={this.handleLogout}>Log out</button>
                 }
             </div>
         );
@@ -37,13 +41,17 @@ export default class HomePage extends React.Component {
     }
 
     initialize(data) {
-        var {users, name} = data;
-        this.setState({users, user: name});
+        console.log('initialize =>', data);
+        const {users, name} = data;
+        this.setState({
+            users, name
+        });
     }
 
     userJoined(data) {
-        var {users} = this.state;
-        var {name} = data;
+        console.log('userJoined =>', data);
+        const {users} = this.state;
+        const {name} = data;
         users.push(name);
         this.setState({
             users, 
@@ -52,9 +60,10 @@ export default class HomePage extends React.Component {
     }
 
     userLeft(data) {
-        var {users} = this.state;
-        var {name} = data;
-        var index = users.indexOf(name);
+        console.log('userLeft =>', data);
+        const {users} = this.state;
+        const {name} = data;
+        const index = users.indexOf(name);
         users.splice(index, 1);
         this.setState({
             users, 
@@ -63,9 +72,10 @@ export default class HomePage extends React.Component {
     }
 
     userChangedName(data) {
-        var {oldName, newName} = data;
-        var {users} = this.state;
-        var index = users.indexOf(oldName);
+        console.log('userChangedName =>', data);
+        const {oldName, newName} = data;
+        const {users} = this.state;
+        const index = users.indexOf(oldName);
         users.splice(index, 1, newName);
         this.setState({
             users, 
@@ -74,19 +84,19 @@ export default class HomePage extends React.Component {
     }
 
     handleChangeName(newName) {
-        var oldName = this.state.user;
         this.socket.emit('change:name', { name : newName}, (result) => {
             if(!result) {
                 return alert('There was an error changing your name');
             }
-            var {users} = this.state;
-            var index = users.indexOf(oldName);
+            const {users, name} = this.state;
+            const index = users.indexOf(name);
             users.splice(index, 1, newName);
-            this.setState({users, user: newName});
+            this.setState({users, name: newName});
         });
     }
 
     handleLogout() {
-        this.socket.emit('disconnect', {name: this.state.user});
+        const {name} = this.state;
+        this.socket.emit('disconnect', { name });
     }
 }

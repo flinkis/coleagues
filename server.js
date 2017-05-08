@@ -1,5 +1,5 @@
 import express from 'express';
-const app = express();
+import socket from './src/socket';
 
 /************************************************************
  *
@@ -9,6 +9,7 @@ const app = express();
  *   - index.html
  *
  ************************************************************/
+const app = express();
 
 // Serve application file depending on environment
 app.get('/app.js', (req, res) => {
@@ -74,8 +75,15 @@ const server = app.listen(port, () => {
   console.log('Listening at http://%s:%s', host, port);
 });
 
-const io = require('socket.io')(server);
-const socket = require('./src/socket.js');
 
+/*************************************************************
+ *
+ * Setup Socket.io
+ *
+ * See: https://socket.io/
+ *
+ *************************************************************/
+ 
+const io = require('socket.io')(server);
 io.sockets.on('connection', socket);
 

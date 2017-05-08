@@ -1,12 +1,17 @@
-// Keep track of which names are used so that there are no duplicates
+const _ = require('lodash');
+
 const UserNames = {
     names: [],
 
+    get() {
+        return this.names;
+    },
+
     claim(name) {
-        if (!name || this.names[name]) {
+        if (_.includes(this.names, name)) {
             return false;
         } else {
-            this.names[name] = true;
+            this.names.push(name);
             return true;
         }
     },
@@ -20,32 +25,28 @@ const UserNames = {
             nextUserId += 1;
         } while (!this.claim(name));
 
-        return name;
-    },
-
-    get() {
-        return this.names;
+        return this.name;
     },
 
     free(name) {
-        if (this.names[name]) {
-            delete this.names[name];
-        }
+        _.pull(this.names, name);
     }
 };
 
 // export function for listening to the socket
 module.exports = function (socket) {
+    let name = UserNames.getGuestName();
+    console.log(UserNames.get());
+
     socket.emit('init', {
-        name: UserNames.getGuestName(),
+        name,
         users: UserNames.get()
     });
 
-    socket.broadcast.emit('user:join', {
-        name: name
-    });
+    socket.broadcast.emit('user:join', { name });
 
     socket.on('change:name', function (data, fn) {
+        
         if (UserNames.claim(data.name)) {
             let oldName = name;
             UserNames.free(oldName);

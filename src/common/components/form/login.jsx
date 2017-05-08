@@ -10,12 +10,17 @@ class LogInForm extends React.Component {
             newName: '',
             password: ''
         };
+
+        this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onNameChange = this.onNameChange.bind(this);
+        this.onPasswordChange = this.onPasswordChange.bind(this);
     }
 
     onFormSubmit(event) {
+        const {newName} = this.state;
         event.preventDefault();
 
-        this.props.onChangeName(this.state.newName);
+        this.props.onChangeName(newName);
         this.setState({ newName: '' });
     }
 
@@ -34,13 +39,11 @@ class LogInForm extends React.Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.onFormSubmit.bind(this)}>
-                    <label>User Name:</label>
-                    <input type="text" name="user" placeholder="user" value={this.state.newName} onChange={this.onNameChange.bind(this)}/>
-                    <br />
-                    <label>Password:</label>
-                    <input type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.onPasswordChange.bind(this)}/>
-                    <br />
+                <form onSubmit={this.onFormSubmit}>
+                    <label htmlFor="name">User Name:</label>
+                    <input type="text" id="name" placeholder="User name" value={this.state.newName} onChange={this.onNameChange}/>
+                    <label htmlFor="password">Password:</label>
+                    <input type="password" id="password" placeholder="Password" value={this.state.password} onChange={this.onPasswordChange}/>
                     <button type="submit">Log In</button>
                 </form>
             </div>
