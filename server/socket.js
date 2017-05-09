@@ -64,6 +64,14 @@ module.exports = function (socket) {
         matches: Matches.get(),
     });
 
+    socket.on('refresh', function() {
+        socket.emit('init', {
+            name: name,
+            users: UserNames.get(),
+            matches: Matches.get(),
+        });
+    })
+
     socket.broadcast.emit('user:join', { name });
 
     socket.on('change:name', function (data, fn) {

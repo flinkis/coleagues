@@ -8,10 +8,13 @@ import GamePage from './pages/game/page';
 
 //Socket
 const socket = io.connect();
+const refresh = () =>  {
+    socket.emit('refresh');
+}
 
 export default (
     <Route path="/" component={App}>
-        <IndexRoute component={HomePage} socket={socket} />
+        <IndexRoute component={HomePage} socket={socket} onEnter={refresh}/>
         <Route path="match" component={GamePage} socket={socket} />
     </Route>
 );
