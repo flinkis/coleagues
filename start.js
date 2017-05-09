@@ -2,4 +2,4 @@
 const babelRegister = require('babel-register');
 babelRegister();
 
-require('./server.js');
+require('./server/server.js');

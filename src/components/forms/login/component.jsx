@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import io from 'socket.io-client';
 
-class LogInForm extends React.Component {
+class UserLogin extends React.Component {
     constructor(props) {
         super(props);
         
@@ -51,8 +51,8 @@ class LogInForm extends React.Component {
     }
 }
 
-LogInForm.PropTypes = {
-    user: PropTypes.string
+UserLogin.PropTypes = {
+    onChangeName: PropTypes.func
 }
 
-export default LogInForm;
+export default UserLogin;

@@ -9,9 +9,10 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, browserHistory } from 'react-router';
+import io from 'socket.io-client';
 
 // Routes
-import Routes from './common/components/Routes';
+import Routes from './routes';
 
 // Base styling
 import './common/base.css';

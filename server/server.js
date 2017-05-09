@@ -1,5 +1,4 @@
 import express from 'express';
-import socket from './src/socket';
 
 /************************************************************
  *
@@ -10,11 +9,12 @@ import socket from './src/socket';
  *
  ************************************************************/
 const app = express();
+const path = require('path');
 
 // Serve application file depending on environment
 app.get('/app.js', (req, res) => {
   if (process.env.PRODUCTION) {
-    res.sendFile(__dirname + '/build/app.js');
+    res.sendFile(path.join(__dirname, '../build', 'app.js'));
   } else {
     res.redirect('//localhost:9090/build/app.js');
   }
@@ -23,7 +23,7 @@ app.get('/app.js', (req, res) => {
 // Serve aggregate stylesheet depending on environment
 app.get('/style.css', (req, res) => {
   if (process.env.PRODUCTION) {
-    res.sendFile(__dirname + '/build/style.css');
+    res.sendFile(path.join(__dirname, '../build', 'style.css'));
   } else {
     res.redirect('//localhost:9090/build/style.css');
   }
@@ -31,7 +31,7 @@ app.get('/style.css', (req, res) => {
 
 // Serve index page
 app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/build/index.html');
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 /*************************************************************
@@ -45,7 +45,7 @@ app.get('*', (req, res) => {
 if (!process.env.PRODUCTION) {
   const webpack = require('webpack');
   const WebpackDevServer = require('webpack-dev-server');
-  const config = require('./webpack.local.config');
+  const config = require('../webpack.local.config');
 
   new WebpackDevServer(webpack(config), {
     publicPath: config.output.publicPath,
@@ -83,7 +83,8 @@ const server = app.listen(port, () => {
  * See: https://socket.io/
  *
  *************************************************************/
- 
+import socket from './socket';
+
 const io = require('socket.io')(server);
 io.sockets.on('connection', socket);
 
