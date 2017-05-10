@@ -1,32 +1,37 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { browserHistory } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import _ from 'lodash';
 
-import CreateMatchForm from '../../components/forms/match/component';
+import CreateMatchForm from '../../components/forms/game/component';
 
 class GamePage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            matches: []
+            games: []
         }
-        this.onMatchCreate = this.onMatchCreate.bind(this);
+        this.onGameCreated = this.onGameCreated.bind(this);
     }
     goHome() {
         browserHistory.push('/');
     }
 
-    onMatchCreate(match) {
-        const { matches } = this.state;
+    onGameCreated(game) {
+        const { games } = this.state;
         const { socket } = this.props.route;
 
-        socket.emit('matches:add', { match }, (result) => {
-            if(!result) {
-                return alert('There was an error creating the match');
-            }
-            matches.push(match);
-            this.setState({ matches });
+        socket.emit('games:getUniqueId', (result) => {
+            const { uid } = result;
+            game.uid = uid;
+
+            socket.emit('games:add', { game }, (result) => {
+                if(!result) {
+                    return alert('There was an error creating the game');
+                }
+
+                this.goHome();
+            });
         });
     }
 
@@ -35,9 +40,8 @@ class GamePage extends React.Component {
             <div>
                 <h1>Create Game</h1>
                 <p>Create a game and get started!</p>
-                <button onClick={this.goHome}>Go Home</button>
-
-                <CreateMatchForm onMatchCreate={ this.onMatchCreate } />
+                <Link to="/">Go Home</Link>
+                <CreateMatchForm onGameCreated={ this.onGameCreated } />
             </div>
         );
     }

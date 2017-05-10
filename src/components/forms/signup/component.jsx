@@ -1,0 +1,58 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import styles from "./style.css";
+
+class UserSignup extends React.Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            newUser: {
+                name: '',
+                size: 0,
+                password: ''
+            }
+        };
+
+        this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.inputChange = this.inputChange.bind(this);
+    }
+
+    onFormSubmit(event) {
+        const { newUser } = this.state;
+        event.preventDefault();
+
+        this.props.onSignup(newUser);
+    }
+
+    inputChange(label) {
+        return (event) => {
+            const { newUser } = this.state;
+            newUser[label] = event.target.value;
+            this.setState({ newUser });
+        }
+    }
+
+    render() {
+        const { newUser } = this.state;
+        return (
+            <div>
+                <form onSubmit={this.onFormSubmit}>
+                    <label htmlFor="name">User Name:</label>
+                    <input type="text" id="name" placeholder="User name" value={newUser.name} onChange={ this.inputChange('name') }/>
+                    <label htmlFor="name">Shoe sise:</label>
+                    <input type="number" id="size" placeholder="Size" value={newUser.size} onChange={ this.inputChange('size') }/>
+                    <label htmlFor="password">Password:</label>
+                    <input type="password" id="password" placeholder="Password" value={newUser.password} onChange={ this.inputChange('password') }/>
+                    <button className={ styles.signupButton } type="submit">Sign Up</button>
+                </form>
+            </div>
+        );
+    }
+}
+
+UserSignup.PropTypes = {
+    onSignup: PropTypes.func
+}
+
+export default UserSignup;

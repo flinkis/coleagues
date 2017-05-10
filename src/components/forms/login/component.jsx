@@ -1,49 +1,46 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import io from 'socket.io-client';
 
 class UserLogin extends React.Component {
     constructor(props) {
         super(props);
         
         this.state = {
-            newName: '',
-            password: ''
+            user: {
+                name: '',
+                password: ''
+            }
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.onNameChange = this.onNameChange.bind(this);
-        this.onPasswordChange = this.onPasswordChange.bind(this);
+        this.inputChange = this.inputChange.bind(this);
     }
 
     onFormSubmit(event) {
-        const {newName} = this.state;
+        const { user } = this.state;
         event.preventDefault();
 
-        this.props.onChangeName(newName);
-        this.setState({ newName: '' });
+        this.props.onLogin(user);
     }
 
-    onNameChange(event) {
-        this.setState({
-            newName: event.target.value
-        });
-    }
-
-    onPasswordChange(event) {
-        this.setState({
-            password: event.target.value
-        });
+    inputChange(label) {
+        return (event) => {
+            const { user } = this.state;
+            user[label] = event.target.value;
+            this.setState({ user });
+        }
     }
 
     render() {
+        const { user } = this.state;
+
         return (
             <div>
                 <form onSubmit={this.onFormSubmit}>
                     <label htmlFor="name">User Name:</label>
-                    <input type="text" id="name" placeholder="User name" value={this.state.newName} onChange={this.onNameChange}/>
+                    <input type="text" id="name" placeholder="User name" value={user.name} onChange={this.inputChange('name')}/>
                     <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" placeholder="Password" value={this.state.password} onChange={this.onPasswordChange}/>
+                    <input type="password" id="password" placeholder="Password" value={user.password} onChange={this.inputChange('password')}/>
                     <button type="submit">Log In</button>
                 </form>
             </div>
@@ -52,7 +49,7 @@ class UserLogin extends React.Component {
 }
 
 UserLogin.PropTypes = {
-    onChangeName: PropTypes.func
+    onLogin: PropTypes.func
 }
 
 export default UserLogin;

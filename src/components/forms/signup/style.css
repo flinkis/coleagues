@@ -1,24 +1,4 @@
-.content {
-  margin-top: 20px;
-}
-
-.welcomeText {
-  font-size: 20px;
-  color: #7F7F7F;
-}
-
-.heading {
-    font-size: 10vw;
-}
-
-.lead {
-    display: inline-block;
-    margin-right: 20px;
-    font-size: 3vw;
-}
-
-.signUpButton {
-    display: inline-block;
+.signupButton {
     padding: 1vw 2vw;
     border: 0;
     font-size: 2vw;

@@ -1,19 +1,39 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import styles from './style.css';
 
-export default class LoginPage extends React.Component {
-  signUp() {
-    browserHistory.push('/home');
-  }
-  
-  render() {
-    return (
-      <div className={styles.content}>
-        <h1 className={styles.heading}>Login Page</h1>
-        <p className={styles.lead}>Create an account to get started!</p>
-        <button className={styles.signUpButton} onClick={this.signUp}>Sign up</button>
-      </div>
-    );
-  }
+import UserSignup from '../../components/forms/signup/component';
+
+class LoginPage extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.onSignup = this.onSignup.bind(this);
+    }
+
+    onSignup(newUser) {
+        const { socket } = this.props.route;
+        const { password } = newUser;
+
+        socket.emit('user:hashPassword', { password }, (result) => {
+            const { hash } = result;
+            newUser.password = hash;
+            socket.emit('user:update', { newUser });
+                
+            browserHistory.push('/');
+        });
+    }
+
+    render() {
+        return (
+            <div className={styles.content}>
+                <h1 className={styles.heading}>Create account</h1>
+                <p className={styles.lead}>Join the fun!</p>
+                <UserSignup onSignup={this.onSignup} />
+                <Link to="/" >Nevermind</Link>
+            </div>
+        );
+    }
 }
+
+export default LoginPage;

@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import io from 'socket.io-client';
-import {Link} from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import _ from 'lodash';
 
 import styles from './style.css';
 import UserLogin from '../../components/forms/login/component';
 import UserList from '../../components/userlist/component';
-import MatchList from '../../components/matchlist/component';
-import CreateMatchForm from '../../components/forms/match/component';
+import GamesList from '../../components/gameslist/component';
 
 class HomePage extends React.Component {
     constructor(props) {
@@ -17,149 +16,175 @@ class HomePage extends React.Component {
         this.state = {
             users: [],
             loggedIn: false,
-            matches: []
+            games: []
         };
 
-        this.handleChangeName = this.handleChangeName.bind(this);
+        this.handleUserLogin = this.handleUserLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
+        this.onGameRemoved = this.onGameRemoved.bind(this);
+
+        this.initialize = this.initialize.bind(this);
+        this.userJoined = this.userJoined.bind(this);
+        this.userLeft = this.userLeft.bind(this);
+        this.userChanged = this.userChanged.bind(this);
+        this.addGame = this.addGame.bind(this);
+        this.removeGame = this.removeGame.bind(this);
+        this.updateGames = this.updateGames.bind(this);
+
+        this.signUp = this.signUp.bind(this);
     }
 
     render() {
-        const { users, name, loggedIn, matches } = this.state;
+        const { users, user, loggedIn, games } = this.state;
 
         return (
             <div className={ styles.content }>
-                <h1>{ !loggedIn ? 'Log In' : 'Hello ' + name }</h1> 
-                <UserList users={ users } name={ name } />
+                <h1>{ !loggedIn ? 'Log In' : 'Hello ' + user.name }</h1> 
+                <UserList users={ users } user={ user } />
+
                 { !loggedIn ? 
-                    <UserLogin onChangeName={ this.handleChangeName } /> :
+                    <UserLogin onLogin={ this.handleUserLogin } /> :
                     <button onClick={ this.handleLogout }>Log out</button>
                 }
 
-                <Link to="/match">Create Match</Link>
-                <MatchList matches={matches}/>
+                <p className={ styles.lead }>Create an account to get started!</p>
+                <button className={ styles.signUpButton } onClick={ this.signUp }>Sign up</button>
+
+                <Link to="/create/game">Create game</Link>
+                <GamesList games={ games } onGameRemoved={ this.onGameRemoved }/>
             </div>
         );
+    }
+
+    signUp() {
+        browserHistory.push('/create/user');
     }
 
     componentDidMount() {
         const { socket } = this.props.route;
 
-        socket.on('init', this.initialize.bind(this));
-        socket.on('user:join', this.userJoined.bind(this));
-        socket.on('user:left', this.userLeft.bind(this));
-        socket.on('change:name', this.userChangedName.bind(this));
-        socket.on('matches:add', this.addMatch.bind(this));
-        socket.on('matches:remove', this.removeMatch.bind(this));
+        socket.on('init', this.initialize);
+
+        socket.on('user:join', this.userJoined);
+        socket.on('user:left', this.userLeft);
+        socket.on('user:update', this.userChanged);
+
+        socket.on('games:add', this.addGame);
+        socket.on('games:remove', this.removeGame);
+        socket.on('games:update', this.updateGames);
     }
 
-    initialize(data) {
-        const { users, name, matches } = data;
+    initialize(response) {
+        const { users, user, games } = response;
         this.setState({
-            users, name, matches
+            users, user, games
         });
     }
 
-    userJoined(data) {
+    userJoined(response) {
         const { users } = this.state;
-        const { name } = data;
+        const { user } = response;
 
-        users.push(name);
+        users.push(user);
         this.setState({users});
     }
 
-    userLeft(data) {
+    userLeft(response) {
         const { users } = this.state;
-        const { name } = data;
+        const { uid } = response;
 
-        _.pull(users, name);
-        this.setState({ users });
+        this.setState({ users: _.reject(users, { uid }) });
     }
 
-    userChangedName(data) {
-        console.log('userChangedName => ', data);
-        const { oldName, newName } = data;
+    userChanged(response) {
+        const { user, newUser } = response;
         const { users } = this.state;
-        const index = users.indexOf(oldName);
+        const index = users.indexOf(user);
 
-        users.splice(index, 1, newName);
+        console.log(user, users, newUser);
+        users.splice(index, 1, newUser);
         this.setState({users});
     }
 
-    addMatch(data) {
-        const { matches } = this.state;
-        const { match } = data;
+    addGame(response) {
+        const { games } = this.state;
+        const { game } = response;
 
-        matches.push(match);
-        this.setState({matches});
+        games.push(game);
+        this.setState({games});
     }
 
-    removeMatch(data) {
-        const { matches } = this.state;
-        const { match } = data;
+    removeGame(response) {
+        const { games } = this.state;
+        const { uid } = response;
+        const newGames = _.reject(games, { uid });
 
-        _.pull(matches, match);
-        this.setState({ matches });
+        this.setState({ games: newGames });
     }
 
-    handleChangeName(newName) {
-        const { users, name } = this.state;
+    updateGames(response) {
+        const { games } = this.state;
+        const { game, uid } = response;
+        const oldGame = _.find(games, { uid });
+        if ( oldGame ) {
+            game.uid = uid;
+            games.splice(
+                games.indexOf(oldGame), 1, game
+            );
+
+            this.setState({ games });
+        }
+    }
+
+    handleUserLogin(data) {
+        const { users, user } = this.state;
         const { socket } = this.props.route;
 
-        socket.emit('change:name', { newName, oldName: name}, (result) => {
+        socket.emit('user:checkPassword', data, (result) => {
             if(!result) {
-                return alert('There was an error changing your name');
+                return alert('There was an error loging in');
             }
-            const index = users.indexOf(name);
 
-            users.splice(index, 1, newName);
+            const { loggedInUser } = result;
+            const index = users.indexOf(user);
+
+            socket.emit('user:update', { newUser: loggedInUser });
+
+            users.splice(index, 1, loggedInUser);
             this.setState({
                 users,
-                name: newName,
+                user: loggedInUser,
                 loggedIn: true
             });
-        });
+        })
     }
 
     handleLogout() {
-        const { users, name } = this.state;
+        const { users, user } = this.state;
         const { socket } = this.props.route;
-        const newName = this.getNewName();
 
-        socket.emit('change:name', { newName, oldName: name }, (result) => {
-            if(!result) {
-                return alert('There was an error changing your name');
-            }
-            const index = users.indexOf(name);
+        socket.emit('user:getNewGuest', (result) => {
+            const { newGuest } = result;
+            const index = users.indexOf(user);
 
-            users.splice(index, 1, newName);
+            users.splice(index, 1, newGuest);
             this.setState({
                 users,
-                name: newName,
+                user: newGuest,
                 loggedIn: false
             });
         });
     }
 
-    getNewName() {
-        const { users } = this.state;
-        let newName,
-        nextUserId = 1;
+    onGameRemoved(uid) {
+        return (event) => {
+            const { games } = this.state;
+            const { socket } = this.props.route;
+            const newGames = _.reject(games, { uid });
 
-        do {
-            newName = 'Guest ' + nextUserId++;
-        } while (_.includes(users, newName));
-
-        return newName;
-    }
-
-    onMatchRemove(match) {
-        const { matches } = this.state;
-        const { socket } = this.props.route;
-
-        _.pull(matches, match);
-        this.setState({ matches });
-        socket.emit('matches:remove', { match });
+            this.setState({ games: newGames });
+            socket.emit('games:remove', { uid });
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class CreateMatchForm extends React.Component {
+class CreateGameForm extends React.Component {
     constructor(props) {
         super(props);
 
@@ -20,9 +20,10 @@ class CreateMatchForm extends React.Component {
         event.preventDefault();
 
         if (_.every(players, (player) => player !== '')) {
-            this.props.onMatchCreate({players});
-
-            this.setState({ players: players.map((player) => '') });
+            this.props.onGameCreated({
+                players,
+                score: players.map((item) => 0)
+            });
         } else {
             this.setState({error: 'You have to name all the players.'});
         }
@@ -31,9 +32,9 @@ class CreateMatchForm extends React.Component {
     addPlayer() {
         const { players } = this.state;
         this.setState({ 
-                players: players.concat(['']), 
-                error: '' 
-            });
+            players: players.concat(['']), 
+            error: '' 
+        });
     }
 
     removePlaye(index) {
@@ -78,8 +79,8 @@ class CreateMatchForm extends React.Component {
     }
 }
 
-CreateMatchForm.PropTypes = {
-    onMatchCreate: PropTypes.func
+CreateGameForm.PropTypes = {
+    onGameCreated: PropTypes.func
 }
 
-export default CreateMatchForm;
+export default CreateGameForm;
