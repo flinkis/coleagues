@@ -12,7 +12,6 @@ import GamesList from '../../components/gameslist/component';
 class HomePage extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             users: [],
             loggedIn: false,
@@ -139,6 +138,7 @@ class HomePage extends React.Component {
 
     initialize(response) {
         const { users, user, games } = response;
+
         this.setState({
             users, user, games
         });
@@ -164,7 +164,6 @@ class HomePage extends React.Component {
         const { users } = this.state;
         const index = users.indexOf(user);
 
-        console.log(user, users, newUser);
         users.splice(index, 1, newUser);
         this.setState({users});
     }
@@ -189,6 +188,7 @@ class HomePage extends React.Component {
         const { games } = this.state;
         const { game, uid } = response;
         const oldGame = _.find(games, { uid });
+
         if ( oldGame ) {
             game.uid = uid;
             games.splice(
