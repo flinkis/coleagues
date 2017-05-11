@@ -15,7 +15,8 @@ class ScorePage extends React.Component {
             }
         }
 
-        this.onScoreChange = this.onScoreChange.bind(this);
+        this.hanleScoreChange = this.hanleScoreChange.bind(this);
+        this.updateGames = this.updateGames.bind(this);
     }
 
     componentWillMount() {
@@ -26,22 +27,18 @@ class ScorePage extends React.Component {
             const { game } = result;
             this.setState({ game });
         });
+
+        socket.on('games:update', this.updateGames);
     }
 
-    goHome() {
-        browserHistory.push('/');
-    }
-
-    onScoreChange(game) {
-        const { socket } = this.props.route;
+    updateGames(response) {
+        const { game } = this.state;
         const { uid } = this.props.params;
 
-        socket.emit('games:update', { game, uid }, (result) => {
-            if(!result) {
-                return alert('There was an error reporting score');
-            }
-            this.goHome();
-        });
+        if (uid === response.uid) {
+            game.score = response.game.score;
+            this.setState({ game });
+        }
     }
 
     render() {
@@ -52,9 +49,27 @@ class ScorePage extends React.Component {
                 <p>Report your score and get your standing.</p>
                 <Link to="/">Go back</Link>
 
-                <ScoreForm { ...game } onScoreChange={ this.onScoreChange } />
+                <ScoreForm { ...game } onScoreChange={ this.hanleScoreChange } />
             </div>
         );
+    }
+
+/******************
+ *
+ * Handelers
+ *
+ *****************/
+
+    hanleScoreChange(game) {
+        const { socket } = this.props.route;
+        const { uid } = this.props.params;
+
+        socket.emit('games:update', { game, uid }, (result) => {
+            if(!result) {
+                return alert('There was an error reporting score');
+            }
+            browserHistory.push('/');
+        });
     }
 }
 

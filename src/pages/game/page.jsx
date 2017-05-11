@@ -11,13 +11,28 @@ class GamePage extends React.Component {
         this.state = {
             games: []
         }
-        this.onGameCreated = this.onGameCreated.bind(this);
-    }
-    goHome() {
-        browserHistory.push('/');
+        
+        this.handleGameCreated = this.handleGameCreated.bind(this);
     }
 
-    onGameCreated(game) {
+    render() {
+        return (
+            <div>
+                <h1>Create Game</h1>
+                <p>Create a game and get started!</p>
+                <Link to="/">Go Home</Link>
+                <CreateMatchForm onGameCreated={ this.handleGameCreated } />
+            </div>
+        );
+    }
+
+/******************
+ *
+ * Handelers
+ *
+ *****************/
+
+    handleGameCreated(game) {
         const { games } = this.state;
         const { socket } = this.props.route;
 
@@ -30,20 +45,9 @@ class GamePage extends React.Component {
                     return alert('There was an error creating the game');
                 }
 
-                this.goHome();
+                browserHistory.push('/');
             });
         });
-    }
-
-    render() {
-        return (
-            <div>
-                <h1>Create Game</h1>
-                <p>Create a game and get started!</p>
-                <Link to="/">Go Home</Link>
-                <CreateMatchForm onGameCreated={ this.onGameCreated } />
-            </div>
-        );
     }
 }
 

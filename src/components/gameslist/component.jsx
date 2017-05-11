@@ -4,28 +4,26 @@ import { Link } from 'react-router';
 
 import styles from "./style.css";
 
-class GamesList extends React.Component {
-    render() {
-        const { onGameRemoved, games } = this.props;
-        const listItems = games.map(
-            (game, i) => {
-                const {players, score, uid} = game;
-                return (
-                    <li key={i}>
-                        {players.join(' vs. ')} {score.join('-')}
-                        <Link to={`/score/${ uid }`}>Report score</Link>
-                        <button type="button" onClick={onGameRemoved(uid)}>-</button>
-                    </li>
-                );
-            }
-        );
-        return (
-            <div >
-                <h3> Games </h3>
-                <ul className={styles.gameslist}>{listItems}</ul> 
-            </div>
-        );
-    }
+const GamesList = (props) => {
+    const { onGameRemoved, games } = props;
+    const listItems = games.map(
+        (game, i) => {
+            const {players, score, uid} = game;
+            return (
+                <li key={i}>
+                    {players.join(' vs. ')} {score.join('-')}
+                    <Link to={`/score/${ uid }`}>Report score</Link>
+                    <button type="button" onClick={onGameRemoved(uid)}>-</button>
+                </li>
+            );
+        }
+    );
+    return (
+        <div >
+            <h3> Games </h3>
+            <ul className={styles.gameslist}>{listItems}</ul> 
+        </div>
+    );
 }
 
 GamesList.PropTypes = {

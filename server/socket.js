@@ -1,142 +1,17 @@
 const _ = require('lodash');
 
-const Users = {
-    currentUsers: [],
-    users: [],
-
-    getCurrent() {
-        return this.currentUsers;
-    },
-
-    getById(uid) {
-        return _.find(this.users, { uid });
-    },
-
-    getUniqueId() {
-        let uid;
-
-        do {
-            uid = Math.random().toString(16).slice(2);
-        } while (_.some(this.users, {uid}));
-
-        return uid;
-    },
-
-    add(user) {
-        const { uid, password } = user;
-        if (this.getById(uid)) {
-            return false;
-        } else {
-            user.password = hashCode(password);
-            this.users.push(user);
-            return true;
-        }
-    },
-
-    checkPassword(data) {
-        const { name, password } = data;
-        const user = _.find(this.users, { name });
-        return user && user.password === this.hashCode(password) ? user.uid : false;
-    },
-
-    hashCode(word) {
-        var hash = 0, 
-        i, 
-        chr;
-
-        if (word.length === 0) {
-            return hash;
-        }
-
-        for (i = 0; i < word.length; i++) {
-            chr   = word.charCodeAt(i);
-            hash  = ((hash << 5) - hash) + chr;
-            hash |= 0;
-        }
-
-        return hash;
-    },
-
-    getGuestUser() {
-        const uid = this.getUniqueId();
-        let name,
-            nextUserId = 1;
-
-        do {
-            name = 'Guest ' + nextUserId;
-            nextUserId += 1;
-        } while (_.some(this.currentUsers, {name}));
-
-        this.currentUsers.push({ name, uid })
-        return { name, uid };
-    },
-
-    update(oldUser, newUser) {
-        const getIndex = (haystack, needle) => Math.max(_.indexOf(haystack, needle),  0);
-        const currentIndex = getIndex(this.currentUsers, oldUser);
-        const userIndex = getIndex(this.users, oldUser);
-
-        this.currentUsers.splice(currentIndex, 1, newUser);
-        this.users.splice(userIndex, 1, newUser);
-    },
-
-    remove(uid) {
-        this.currentUsers = _.reject(this.currentUsers, { uid });
-    }
-};
-
-const Games = {
-    games: [],
-
-    getAll() {
-        return this.games;
-    },
-
-    getById(uid) {
-        return _.find(this.games, { uid });
-    },
-
-    getUniqueId() {
-        let uid;
-
-        do {
-            uid = Math.random().toString(16).slice(2);
-        } while (_.some(this.games, {uid}));
-
-        return uid;
-    },
-
-    add(game) {
-        if (_.includes(this.games, game)) {
-            return false;
-        } else {
-            this.games.push(game);
-            return true;
-        }
-    },
-
-    update(data) {
-        const { game, uid } = data;
-        const oldGame = this.getById(uid);
-        if ( oldGame ) {
-            game.uid = uid;
-            this.games.splice(
-                this.games.indexOf(oldGame), 1, game
-            );
-            return true;
-        } else {
-            return false;
-        }
-    },
-
-    remove(uid) {
-        this.games = _.reject(this.games, { uid });
-    }
-}
+const Users = require('./data/users');
+const Games = require('./data/games');
 
 // export function for listening to the socket
-module.exports = function (socket) {
-    let user = Users.getGuestUser();
+module.exports = (socket) => {
+    let user = user ? user : Users.getGuestUser();
+
+/******************
+ *
+ * Emit Init and send all data to clinent
+ *
+ *****************/
 
     socket.emit('init', {
         user: user,
@@ -144,7 +19,7 @@ module.exports = function (socket) {
         games: Games.getAll(),
     });
 
-    socket.on('refresh', function() {
+    socket.on('refresh', () => {
         socket.emit('init', {
             user: user,
             users: Users.getCurrent(),
@@ -152,7 +27,13 @@ module.exports = function (socket) {
         });
     });
 
-    socket.on('user:getNewGuest', function(callback) {
+/******************
+ *
+ * User calls
+ *
+ *****************/
+
+    socket.on('user:getNewGuest', (callback) => {
         const newGuest = Users.getGuestUser();
         socket.broadcast.emit('user:update', { user, newGuest });
         user = newGuest;
@@ -161,10 +42,9 @@ module.exports = function (socket) {
 
     socket.broadcast.emit('user:join', { user });
 
-    socket.on('user:update', function (data) {
+    socket.on('user:update', (data) => {
         const { newUser } = data;
-        console.log(newUser, user);
-        newUser.uid = user.uid;
+        newUser.uid = Users.getUniqueId();
 
         Users.update(user, newUser);
 
@@ -172,13 +52,13 @@ module.exports = function (socket) {
         user = newUser;
     });
 
-    socket.on('user:hashPassword', function(data, callback) {
+    socket.on('user:hashPassword', (data, callback) => {
         const { password } = data;
-        const hash = Users.hashCode(password.toString());
+        const hash = Users._hashEncode(password.toString());
         callback({ hash });
     });
 
-    socket.on('user:checkPassword', function (data, callback) {
+    socket.on('user:checkPassword', (data, callback) => {
         const uid = Users.checkPassword(data);
         if (uid) {
             user = Users.getById(uid);
@@ -188,7 +68,20 @@ module.exports = function (socket) {
         }
     });
 
-    socket.on('games:add', function (data, callback) {
+    // Remove user from current users on disconect
+    socket.on('disconnect', () => {
+        const { uid } = user;
+        Users.remove(uid);
+        socket.broadcast.emit('user:left', { uid });
+    });
+
+/******************
+ *
+ * Game calls
+ *
+ *****************/
+
+    socket.on('games:add', (data, callback) => {
         if (Games.add(data.game)) {
             socket.broadcast.emit('games:add', data);
             callback(true);
@@ -197,24 +90,24 @@ module.exports = function (socket) {
         }
     });
 
-    socket.on('games:remove', function (data) {
+    socket.on('games:remove', (data) => {
         const { uid } = data;
         Games.remove(uid);
         socket.broadcast.emit('games:remove', { uid });
     });
 
-    socket.on('games:getById', function (data, callback) {
+    socket.on('games:getById', (data, callback) => {
         const { uid } = data;
         const game = Games.getById(uid);
         callback({ game });
     });
 
-    socket.on('games:getUniqueId', function (callback) {
+    socket.on('games:getUniqueId', (callback) => {
         const uid = Games.getUniqueId();
         callback({ uid });
     });
 
-    socket.on('games:update', function (data, callback) {
+    socket.on('games:update', (data, callback) => {
         if (Games.update(data)) {
             socket.broadcast.emit('games:update', data);
             callback(true);
@@ -223,9 +116,4 @@ module.exports = function (socket) {
         }
     });
 
-    socket.on('disconnect', function () {
-        const { uid } = user;
-        Users.remove(uid);
-        socket.broadcast.emit('user:left', { uid });
-    });
 };

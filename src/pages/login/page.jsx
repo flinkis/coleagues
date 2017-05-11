@@ -8,10 +8,27 @@ class LoginPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.onSignup = this.onSignup.bind(this);
+        this.handleSignup = this.handleSignup.bind(this);
     }
 
-    onSignup(newUser) {
+    render() {
+        return (
+            <div className={styles.content}>
+                <h1 className={styles.heading}>Create account</h1>
+                <p className={styles.lead}>Join the fun!</p>
+                <UserSignup onSignup={this.handleSignup} />
+                <Link to="/" >Nevermind</Link>
+            </div>
+        );
+    }
+
+/******************
+ *
+ * Handelers
+ *
+ *****************/
+ 
+    handleSignup(newUser) {
         const { socket } = this.props.route;
         const { password } = newUser;
 
@@ -22,17 +39,6 @@ class LoginPage extends React.Component {
                 
             browserHistory.push('/');
         });
-    }
-
-    render() {
-        return (
-            <div className={styles.content}>
-                <h1 className={styles.heading}>Create account</h1>
-                <p className={styles.lead}>Join the fun!</p>
-                <UserSignup onSignup={this.onSignup} />
-                <Link to="/" >Nevermind</Link>
-            </div>
-        );
     }
 }
 

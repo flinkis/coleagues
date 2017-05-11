@@ -21,7 +21,7 @@ class HomePage extends React.Component {
 
         this.handleUserLogin = this.handleUserLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
-        this.onGameRemoved = this.onGameRemoved.bind(this);
+        this.handleGameRemoved = this.handleGameRemoved.bind(this);
 
         this.initialize = this.initialize.bind(this);
         this.userJoined = this.userJoined.bind(this);
@@ -31,7 +31,11 @@ class HomePage extends React.Component {
         this.removeGame = this.removeGame.bind(this);
         this.updateGames = this.updateGames.bind(this);
 
-        this.signUp = this.signUp.bind(this);
+        this.gotoSigniup = this.gotoSigniup.bind(this);
+    }
+
+    gotoSigniup() {
+        browserHistory.push('/create/user');
     }
 
     render() {
@@ -48,17 +52,76 @@ class HomePage extends React.Component {
                 }
 
                 <p className={ styles.lead }>Create an account to get started!</p>
-                <button className={ styles.signUpButton } onClick={ this.signUp }>Sign up</button>
+                <button className={ styles.gotoSigniupButton } onClick={ this.gotoSigniup }>Sign up</button>
 
                 <Link to="/create/game">Create game</Link>
-                <GamesList games={ games } onGameRemoved={ this.onGameRemoved }/>
+                <GamesList games={ games } onGameRemoved={ this.handleGameRemoved }/>
             </div>
         );
     }
 
-    signUp() {
-        browserHistory.push('/create/user');
+/******************
+ *
+ * Handelers
+ *
+ *****************/
+
+    handleUserLogin(data) {
+        const { users, user } = this.state;
+        const { socket } = this.props.route;
+
+        socket.emit('user:checkPassword', data, (result) => {
+            if(!result) {
+                return alert('There was an error loging in');
+            }
+
+            const { loggedInUser } = result;
+            const index = users.indexOf(user);
+
+            socket.emit('user:update', { newUser: loggedInUser });
+
+            users.splice(index, 1, loggedInUser);
+            this.setState({
+                users,
+                user: loggedInUser,
+                loggedIn: true
+            });
+        })
     }
+
+    handleLogout() {
+        const { users, user } = this.state;
+        const { socket } = this.props.route;
+
+        socket.emit('user:getNewGuest', (result) => {
+            const { newGuest } = result;
+            const index = users.indexOf(user);
+
+            users.splice(index, 1, newGuest);
+            this.setState({
+                users,
+                user: newGuest,
+                loggedIn: false
+            });
+        });
+    }
+
+    handleGameRemoved(uid) {
+        return (event) => {
+            const { games } = this.state;
+            const { socket } = this.props.route;
+            const newGames = _.reject(games, { uid });
+
+            this.setState({ games: newGames });
+            socket.emit('games:remove', { uid });
+        }
+    }
+
+/******************
+ *
+ * Setup Socket connection
+ *
+ *****************/
 
     componentDidMount() {
         const { socket } = this.props.route;
@@ -133,57 +196,6 @@ class HomePage extends React.Component {
             );
 
             this.setState({ games });
-        }
-    }
-
-    handleUserLogin(data) {
-        const { users, user } = this.state;
-        const { socket } = this.props.route;
-
-        socket.emit('user:checkPassword', data, (result) => {
-            if(!result) {
-                return alert('There was an error loging in');
-            }
-
-            const { loggedInUser } = result;
-            const index = users.indexOf(user);
-
-            socket.emit('user:update', { newUser: loggedInUser });
-
-            users.splice(index, 1, loggedInUser);
-            this.setState({
-                users,
-                user: loggedInUser,
-                loggedIn: true
-            });
-        })
-    }
-
-    handleLogout() {
-        const { users, user } = this.state;
-        const { socket } = this.props.route;
-
-        socket.emit('user:getNewGuest', (result) => {
-            const { newGuest } = result;
-            const index = users.indexOf(user);
-
-            users.splice(index, 1, newGuest);
-            this.setState({
-                users,
-                user: newGuest,
-                loggedIn: false
-            });
-        });
-    }
-
-    onGameRemoved(uid) {
-        return (event) => {
-            const { games } = this.state;
-            const { socket } = this.props.route;
-            const newGames = _.reject(games, { uid });
-
-            this.setState({ games: newGames });
-            socket.emit('games:remove', { uid });
         }
     }
 }
