@@ -8,6 +8,7 @@ import styles from './style.css';
 import UserLogin from '../../components/forms/login/component';
 import UserList from '../../components/userlist/component';
 import GamesList from '../../components/gameslist/component';
+import Auth from '../../auth';
 
 class HomePage extends React.Component {
     constructor(props) {
@@ -23,35 +24,39 @@ class HomePage extends React.Component {
         this.handleGameRemoved = this.handleGameRemoved.bind(this);
 
         this.initialize = this.initialize.bind(this);
-        this.userJoined = this.userJoined.bind(this);
         this.userLeft = this.userLeft.bind(this);
         this.userChanged = this.userChanged.bind(this);
         this.addGame = this.addGame.bind(this);
         this.removeGame = this.removeGame.bind(this);
         this.updateGames = this.updateGames.bind(this);
-
-        this.gotoSigniup = this.gotoSigniup.bind(this);
     }
 
-    gotoSigniup() {
-        browserHistory.push('/create/user');
+    componentWillMount() {
+        const { getUser, setUser, socket } = this.props.route;
+        const { users, user } = this.state;
+
+        Auth.handleAuthentication(socket, (authenticatedUser) => {
+            if (authenticatedUser) {
+                socket.emit('user:update', { newUser: authenticatedUser });
+                socket.emit('refresh');
+                this.setState({loggedIn: true});
+            }
+        });
     }
 
     render() {
-        const { users, user, loggedIn, games } = this.state;
+        const { users, loggedIn, games, user } = this.state;
+        const username = user ? user.name : '';
 
         return (
             <div className={ styles.content }>
-                <h1>{ !loggedIn ? 'Log In' : 'Hello ' + user.name }</h1> 
+                <h1>{ !loggedIn ? 'Log In' : 'Hello ' + username }</h1> 
                 <UserList users={ users } user={ user } />
 
                 { !loggedIn ? 
                     <UserLogin onLogin={ this.handleUserLogin } /> :
                     <button onClick={ this.handleLogout }>Log out</button>
                 }
-
-                <p className={ styles.lead }>Create an account to get started!</p>
-                <button className={ styles.gotoSigniupButton } onClick={ this.gotoSigniup }>Sign up</button>
 
                 <Link to="/create/game">Create game</Link>
                 <GamesList games={ games } onGameRemoved={ this.handleGameRemoved }/>
@@ -67,40 +72,38 @@ class HomePage extends React.Component {
 
     handleUserLogin(data) {
         const { users, user } = this.state;
-        const { socket } = this.props.route;
+        const { setUser, socket } = this.props.route;
 
-        socket.emit('user:checkPassword', data, (result) => {
-            if(!result) {
-                return alert('There was an error loging in');
-            }
-
-            const { loggedInUser } = result;
-            const index = users.indexOf(user);
-
-            socket.emit('user:update', { newUser: loggedInUser });
+        Auth.login(data, user, socket, (loggedInUser) => {
+            const index = users.indexOf( user );
 
             users.splice(index, 1, loggedInUser);
+
             this.setState({
-                users,
                 user: loggedInUser,
+                users,
                 loggedIn: true
             });
-        })
+            setUser(loggedInUser);
+        });
     }
 
     handleLogout() {
         const { users, user } = this.state;
-        const { socket } = this.props.route;
+        const { setUser, socket } = this.props.route;
 
-        socket.emit('user:getNewGuest', (result) => {
-            const { newGuest } = result;
-            const index = users.indexOf(user);
+        Auth.logout(socket, user, () => {
+            socket.emit('user:getNewGuest', (result) => {
+                const { newUser } = result;
+                const index = users.indexOf(user);
 
-            users.splice(index, 1, newGuest);
-            this.setState({
-                users,
-                user: newGuest,
-                loggedIn: false
+                users.splice(index, 1, newUser);
+                this.setState({
+                    user: newUser,
+                    users,
+                    loggedIn: false
+                });
+                setUser(newUser);
             });
         });
     }
@@ -136,20 +139,19 @@ class HomePage extends React.Component {
         socket.on('games:update', this.updateGames);
     }
 
-    initialize(response) {
-        const { users, user, games } = response;
+    componentWillUnmount() {
+        const { socket } = this.props.route;
 
-        this.setState({
-            users, user, games
-        });
+        socket.off('init', this.initialize);
     }
 
-    userJoined(response) {
-        const { users } = this.state;
-        const { user } = response;
+    initialize(response) {
+        const { user, users, games } = response;
 
-        users.push(user);
-        this.setState({users});
+        this.setState({
+            user, users, games
+        });
+
     }
 
     userLeft(response) {
@@ -163,9 +165,16 @@ class HomePage extends React.Component {
         const { user, newUser } = response;
         const { users } = this.state;
         const index = users.indexOf(user);
+        let newUserList = users;
 
-        users.splice(index, 1, newUser);
-        this.setState({users});
+        if (user) {
+            const newUserList = _.remove(users, (u) => u.uid === user.uid);
+        }
+        newUserList.push(newUser);
+
+        this.setState({
+            users: newUserList
+        });
     }
 
     addGame(response) {
@@ -201,7 +210,9 @@ class HomePage extends React.Component {
 }
 
 HomePage.PropTypes = {
-    socket: PropTypes.func
+    socket: PropTypes.object,
+    user: PropTypes.object,
+    setUser: PropTypes.func
 }
 
 export default HomePage;

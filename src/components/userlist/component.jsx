@@ -6,7 +6,11 @@ import styles from "./style.css";
 const UserList = (props) => {
     const { users, user } = props;
     const listItems = users.map(
-        (u, i) => <li key={i} className={u.uid === user.uid && styles.active}>{u.name}</li>
+        (u, i) => {
+            return (user && u.uid === user.uid) ?
+                <li key={i} className={styles.active}>{u.name}</li> :
+                <li key={i}>{u.name}</li>;
+        }
     );
 
     return (

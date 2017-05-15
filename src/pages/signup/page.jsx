@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link, browserHistory } from 'react-router';
 import styles from './style.css';
 
 import UserSignup from '../../components/forms/signup/component';
+import Auth from '../../auth';
 
-class LoginPage extends React.Component {
+class SignupPage extends Component {
     constructor(props) {
         super(props);
 
@@ -29,17 +30,13 @@ class LoginPage extends React.Component {
  *****************/
  
     handleSignup(newUser) {
-        const { socket } = this.props.route;
-        const { password } = newUser;
+        const { setUser, socket } = this.props.route;
 
-        socket.emit('user:hashPassword', { password }, (result) => {
-            const { hash } = result;
-            newUser.password = hash;
-            socket.emit('user:update', { newUser });
-                
+        Auth.signup(newUser, socket, (response) => {
+            setUser(response);
             browserHistory.push('/');
         });
     }
 }
 
-export default LoginPage;
+export default SignupPage;

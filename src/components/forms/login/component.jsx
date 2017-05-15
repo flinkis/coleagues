@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { browserHistory } from 'react-router';
+
+import styles from './style.css';
 
 class UserLogin extends React.Component {
     constructor(props) {
@@ -14,6 +17,8 @@ class UserLogin extends React.Component {
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.inputChange = this.inputChange.bind(this);
+
+        this.gotoSigniup = this.gotoSigniup.bind(this);
     }
 
     onFormSubmit(event) {
@@ -31,6 +36,10 @@ class UserLogin extends React.Component {
         }
     }
 
+    gotoSigniup() {
+        browserHistory.push('/create/user');
+    }
+
     render() {
         const { user } = this.state;
 
@@ -43,6 +52,9 @@ class UserLogin extends React.Component {
                     <input type="password" id="password" placeholder="Password" value={user.password} onChange={this.inputChange('password')}/>
                     <button type="submit">Log In</button>
                 </form>
+
+                <p className={ styles.lead }>Create an account to get started!</p>
+                <button className={ styles.gotoSigniupButton } onClick={ this.gotoSigniup }>Sign up</button>
             </div>
         );
     }

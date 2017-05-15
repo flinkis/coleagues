@@ -8,45 +8,24 @@ const _ = require('lodash');
 
 module.exports = {
     currentUsers: [],
-    users: [],
+    usersFromDB: [],
 
     getCurrent() {
         return this.currentUsers;
     },
 
     getById(uid) {
-        return _.find(this.users, { uid });
-    },
-
-    getUniqueId() {
-        let uid;
-
-        do {
-            uid = Math.random().toString(16).slice(2);
-        } while (_.some(this.users, {uid}));
-
-        return uid;
-    },
-
-    add(user) {
-        const { uid, password } = user;
-        if (this.getById(uid)) {
-            return false;
-        } else {
-            user.password = _hashEncode(password);
-            this.users.push(user);
-            return true;
-        }
+        return _.find(this.usersFromDB, { uid });
     },
 
     checkPassword(data) {
         const { name, password } = data;
-        const user = _.find(this.users, { name });
+        const user = _.find(this.usersFromDB, { name });
         return user && user.password === this._hashEncode(password) ? user.uid : false;
     },
 
     getGuestUser() {
-        const uid = this.getUniqueId();
+        const uid = this._getUniqueId();
         let name,
             nextUserId = 1;
 
@@ -59,13 +38,22 @@ module.exports = {
         return { name, uid };
     },
 
-    update(oldUser, newUser) {
-        const getIndex = (haystack, needle) => Math.max(_.indexOf(haystack, needle),  0);
-        const currentIndex = getIndex(this.currentUsers, oldUser);
-        const userIndex = getIndex(this.users, oldUser);
+    update(user, newUser) {
+        const { name, uid } = newUser;
 
-        this.currentUsers.splice(currentIndex, 1, newUser);
-        this.users.splice(userIndex, 1, newUser);
+        if(user) {
+            this.remove(user.uid);
+        }
+
+        this.currentUsers.push({ name, uid });
+    },
+
+    signup(user, newUser) {
+        const { password } = newUser;
+        newUser.password = this._hashEncode(password);
+
+        this.usersFromDB.push(newUser);
+        this.update(user, newUser);
     },
 
     remove(uid) {
@@ -75,6 +63,16 @@ module.exports = {
 /******************
  * Private
  *****************/
+
+    _getUniqueId() {
+        let uid;
+
+        do {
+            uid = Math.random().toString(16).slice(2);
+        } while (_.some(this.usersFromDB, {uid}));
+
+        return uid;
+    },
 
     _hashEncode(word) {
         let hash = 0;

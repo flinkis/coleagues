@@ -9,6 +9,7 @@ class UserSignup extends React.Component {
         this.state = {
             newUser: {
                 name: '',
+                email: '',
                 size: 0,
                 password: ''
             }
@@ -40,6 +41,8 @@ class UserSignup extends React.Component {
                 <form onSubmit={this.onFormSubmit}>
                     <label htmlFor="name">User Name:</label>
                     <input type="text" id="name" placeholder="User name" value={newUser.name} onChange={ this.inputChange('name') }/>
+                    <label htmlFor="email">Email:</label>
+                    <input type="text" id="email" placeholder="Email" value={newUser.email} onChange={ this.inputChange('email') }/>
                     <label htmlFor="name">Shoe sise:</label>
                     <input type="number" id="size" placeholder="Size" value={newUser.size} onChange={ this.inputChange('size') }/>
                     <label htmlFor="password">Password:</label>

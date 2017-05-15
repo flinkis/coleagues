@@ -28,7 +28,7 @@ module.exports = {
     },
 
     add(game) {
-        if (_.includes(this.games, game)) {
+        if (!!_.includes(this.games, game)) {
             return false;
         } else {
             this.games.push(game);
@@ -39,7 +39,7 @@ module.exports = {
     update(data) {
         const { game, uid } = data;
         const oldGame = this.getById(uid);
-        if ( oldGame ) {
+        if (!!oldGame) {
             game.uid = uid;
             this.games.splice(
                 this.games.indexOf(oldGame), 1, game
