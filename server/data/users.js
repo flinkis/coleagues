@@ -21,7 +21,22 @@ module.exports = {
     checkPassword(data) {
         const { name, password } = data;
         const user = _.find(this.usersFromDB, { name });
+
         return user && user.password === this._hashEncode(password) ? user.uid : false;
+    },
+
+    isUserLogedin(data) {
+        const { name } = data;
+        const inCurrentUser = _.find(this.currentUsers, { name });
+
+        return _.isUndefined(inCurrentUser);
+    },
+
+    checkUsername(data) {
+        const { name } = data;
+        const userinDB = _.find(this.usersFromDB, { name });
+
+        return _.isUndefined(userinDB);
     },
 
     getGuestUser() {
@@ -48,12 +63,15 @@ module.exports = {
         this.currentUsers.push({ name, uid });
     },
 
-    signup(user, newUser) {
+    signup(user, newUser, callback) {
         const { password } = newUser;
         newUser.password = this._hashEncode(password);
+        newUser.uid = this._getUniqueId();
 
         this.usersFromDB.push(newUser);
         this.update(user, newUser);
+
+        callback(newUser.uid);
     },
 
     remove(uid) {

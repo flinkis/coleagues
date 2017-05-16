@@ -3,6 +3,7 @@ const jwt = require('json-web-token');
 
 const Users = require('./data/users');
 const Games = require('./data/games');
+const GameTypes = require('./data/gametypes');
 
 // export function for listening to the socket
 module.exports = (socket) => {
@@ -93,22 +94,27 @@ module.exports = (socket) => {
     socket.on('user:signup', (data, callback) => {
         if (!!data) {
             const { name } = data;
-            const { uid } = currentUser;
 
-            Users.signup(currentUser, { ...data, uid });
+            if (Users.checkUsername(data)) {
+                Users.signup(currentUser, data, (uid) => {
+                    socket.broadcast.emit('user:update', { user: currentUser, newUser: { name, uid }});
+                    currentUser = { name, uid };
 
-            socket.broadcast.emit('user:update', { user: currentUser, newUser: { name, uid }});
-            currentUser = { name, uid };
+                    testAndDoCallback(callback, { name, uid }, 'user:signup');
+                });
+            } else {
+                testAndDoCallback(callback, false, 'user:signup');
+            }
 
-            testAndDoCallback(callback, { name, uid }, 'user:signup');
         } else {
             socket.emit('message', { type: 'missing_variable', description: 'payload missing, [user:signup]' });
         }
     });
 
-    socket.on('user:checkPassword', (data, callback) => {
+    socket.on('user:trylogin', (data, callback) => {
         const uid = Users.checkPassword(data);
-        if (uid) {
+        const isUserLogedin = Users.isUserLogedin(data);
+        if (uid && isUserLogedin) {
             const loggedInUser = Users.getById(uid);
 
             testAndDoCallback(callback, { loggedInUser }, 'user:checkPassword');
@@ -130,54 +136,75 @@ module.exports = (socket) => {
  *
  *****************/
 
-    socket.on('games:add', (data, callback) => {
-        const { game } = data;
-
-        if (Games.add(game)) {
-            socket.broadcast.emit('games:add', data);
-
-            testAndDoCallback(callback, true, 'games:add');
-        } else {
-            testAndDoCallback(callback, false, 'games:add');
-        }
-    });
-
-    socket.on('games:remove', (data) => {
+    socket.on('game:remove', (data) => {
         const { uid } = data;
         if (!!uid) {
             Games.remove(uid);
-            socket.broadcast.emit('games:remove', { uid });
+            socket.broadcast.emit('game:remove', { uid });
         } else {
-            socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [games:remove]' });
+            socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [game:remove]' });
         }
-        
     });
 
-    socket.on('games:getById', (data, callback) => {
+    socket.on('game:getById', (data, callback) => {
         const { uid } = data;
 
         if (!!uid) {
             const game = Games.getById(uid);
 
-            testAndDoCallback(callback, { game }, 'games:getById');
+            testAndDoCallback(callback, { game }, 'game:getById');
         } else {
-            socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [games:getById]' });
+            socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [game:getById]' });
         }
     });
 
-    socket.on('games:getUniqueId', (callback) => {
-        const uid = Games.getUniqueId();
+    socket.on('game:update', (data, callback) => {
+        Games.update(data)
+        socket.broadcast.emit('game:update', data);
 
-        testAndDoCallback(callback, { uid }, 'games:getUniqueId');
+        testAndDoCallback(callback, true, 'game:update');
     });
 
-    socket.on('games:update', (data, callback) => {
-        if (Games.update(data)) {
-            socket.broadcast.emit('games:update', data);
+/******************
+ *
+ * GameType calls
+ *
+ *****************/
 
-            testAndDoCallback(callback, true, 'games:update');
+    socket.on('gametype:update', (data, callback) => {
+        GameTypes.update(data);
+        socket.broadcast.emit('gametype:update', data);
+
+        const gametypes = GameTypes.getAll();
+
+        testAndDoCallback(callback, { gametypes }, 'gametype:update');
+    });
+
+    socket.on('gametype:remove', (data) => {
+        const { uid } = data;
+        if (!!uid) {
+            GameTypes.remove(uid);
+            socket.broadcast.emit('gametype:remove', { uid });
         } else {
-            testAndDoCallback(callback, false, 'games:update');
+            socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [games:remove]' });
+        }
+    });
+
+    socket.on('gametype:request', (callback) => {
+        const gametypes = GameTypes.getAll();
+
+        testAndDoCallback(callback, { gametypes }, 'gametype:request');
+    });
+
+    socket.on('gametype:getById', (data, callback) => {
+        const { uid } = data;
+
+        if (!!uid) {
+            const gametype = GameTypes.getById(uid);
+
+            testAndDoCallback(callback, { gametype }, 'gametype:getById');
+        } else {
+            socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [gametype:getById]' });
         }
     });
 
@@ -186,6 +213,7 @@ module.exports = (socket) => {
  * Hellper
  *
  *****************/
+
     const testAndDoCallback = (callback, payload, caller) => {
         if (_.isFunction(callback)) {
             callback(payload);

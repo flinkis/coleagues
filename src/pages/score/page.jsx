@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, browserHistory } from 'react-router';
-import _ from 'lodash';
 
 import ScoreForm from '../../components/forms/score/component';
 
@@ -11,9 +10,9 @@ class ScorePage extends React.Component {
         this.state = {
             game: {
                 players: [],
-                score: []
-            }
-        }
+                score: [],
+            },
+        };
 
         this.hanleScoreChange = this.hanleScoreChange.bind(this);
         this.updateGames = this.updateGames.bind(this);
@@ -23,12 +22,12 @@ class ScorePage extends React.Component {
         const { socket } = this.props.route;
         const { uid } = this.props.params;
 
-        socket.emit('games:getById', { uid }, (result) => {
+        socket.emit('game:getById', { uid }, (result) => {
             const { game } = result;
             this.setState({ game });
         });
 
-        socket.on('games:update', this.updateGames);
+        socket.on('game:update', this.updateGames);
     }
 
     updateGames(response) {
@@ -39,6 +38,24 @@ class ScorePage extends React.Component {
             game.score = response.game.score;
             this.setState({ game });
         }
+    }
+
+
+/******************
+ *
+ * Handelers
+ *
+ *****************/
+
+    hanleScoreChange(game) {
+        const { socket } = this.props.route;
+
+        socket.emit('game:update', { game }, (result) => {
+            if (!result) {
+                return alert('There was an error reporting score');
+            }
+            browserHistory.push('/');
+        });
     }
 
     render() {
@@ -54,27 +71,11 @@ class ScorePage extends React.Component {
         );
     }
 
-/******************
- *
- * Handelers
- *
- *****************/
-
-    hanleScoreChange(game) {
-        const { socket } = this.props.route;
-        const { uid } = this.props.params;
-
-        socket.emit('games:update', { game, uid }, (result) => {
-            if(!result) {
-                return alert('There was an error reporting score');
-            }
-            browserHistory.push('/');
-        });
-    }
 }
 
-ScorePage.PropTypes = {
-    socket: PropTypes.object
-}
+ScorePage.propTypes = {
+    route: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired,
+};
 
 export default ScorePage;

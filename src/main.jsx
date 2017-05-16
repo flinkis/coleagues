@@ -9,7 +9,6 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, browserHistory } from 'react-router';
-import io from 'socket.io-client';
 
 // Routes
 import Routes from './routes';
@@ -22,8 +21,7 @@ const DOM_APP_EL_ID = 'app';
 
 // Render the router
 ReactDOM.render((
-    <Router history={browserHistory}>
-        {Routes}
+    <Router history={ browserHistory }>
+        { Routes }
     </Router>
 ), document.getElementById(DOM_APP_EL_ID));
-

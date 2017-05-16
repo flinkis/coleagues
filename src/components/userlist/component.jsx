@@ -1,29 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import styles from "./style.css";
+import styles from './style.css';
 
 const UserList = (props) => {
     const { users, user } = props;
-    const listItems = users.map(
-        (u, i) => {
-            return (user && u.uid === user.uid) ?
-                <li key={i} className={styles.active}>{u.name}</li> :
-                <li key={i}>{u.name}</li>;
-        }
-    );
+    const listItems = users.map(u => <li key={ u.uid } className={ u.uid === user.uid && styles.active }>{ u.name } / { u.uid }</li>);
 
     return (
         <div >
             <h3> Online Users </h3>
-            <ul className={styles.userlist}>{listItems}</ul> 
+            <ul className={ styles.userlist }>{ listItems }</ul>
         </div>
     );
-}
+};
 
-UserList.PropTypes = {
+UserList.propTypes = {
     users: PropTypes.array.isRequired,
-    user: PropTypes.obj
-}
+    user: PropTypes.object,
+};
+
+UserList.defaultProps = {
+    user: {
+        uid: '',
+    },
+};
 
 export default UserList;

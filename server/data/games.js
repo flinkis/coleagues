@@ -17,7 +17,25 @@ module.exports = {
         return _.find(this.games, { uid });
     },
 
-    getUniqueId() {
+    update(data) {
+        const { game } = data;
+
+        if (!_.isUndefined(game.uid) && _.some(this.games, { uid: game.uid })) {
+            const oldGame = this.getById(game.uid );
+            const index = this.games.indexOf(oldGame);
+
+            this.games.splice(index, 1, game);
+        } else {
+            game.uid = this._getUniqueId();
+            this.games.push(game);
+        }
+    },
+
+    remove(uid) {
+        this.games = _.reject(this.games, { uid });
+    },
+
+    _getUniqueId() {
         let uid;
 
         do {
@@ -26,31 +44,4 @@ module.exports = {
 
         return uid;
     },
-
-    add(game) {
-        if (!!_.includes(this.games, game)) {
-            return false;
-        } else {
-            this.games.push(game);
-            return true;
-        }
-    },
-
-    update(data) {
-        const { game, uid } = data;
-        const oldGame = this.getById(uid);
-        if (!!oldGame) {
-            game.uid = uid;
-            this.games.splice(
-                this.games.indexOf(oldGame), 1, game
-            );
-            return true;
-        } else {
-            return false;
-        }
-    },
-
-    remove(uid) {
-        this.games = _.reject(this.games, { uid });
-    }
 }

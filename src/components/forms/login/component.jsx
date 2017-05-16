@@ -7,18 +7,16 @@ import styles from './style.css';
 class UserLogin extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             user: {
                 name: '',
-                password: ''
-            }
+                password: '',
+            },
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.inputChange = this.inputChange.bind(this);
-
-        this.gotoSigniup = this.gotoSigniup.bind(this);
     }
 
     onFormSubmit(event) {
@@ -33,35 +31,32 @@ class UserLogin extends React.Component {
             const { user } = this.state;
             user[label] = event.target.value;
             this.setState({ user });
-        }
-    }
-
-    gotoSigniup() {
-        browserHistory.push('/create/user');
+        };
     }
 
     render() {
         const { user } = this.state;
+        const gotoSigniup = () => browserHistory.push('/user');
 
         return (
             <div>
-                <form onSubmit={this.onFormSubmit}>
+                <form onSubmit={ this.onFormSubmit }>
                     <label htmlFor="name">User Name:</label>
-                    <input type="text" id="name" placeholder="User name" value={user.name} onChange={this.inputChange('name')}/>
+                    <input type="text" id="name" placeholder="User name" value={ user.name } onChange={ this.inputChange('name') } />
                     <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" placeholder="Password" value={user.password} onChange={this.inputChange('password')}/>
+                    <input type="password" id="password" placeholder="Password" value={ user.password } onChange={ this.inputChange('password') } />
                     <button type="submit">Log In</button>
                 </form>
 
                 <p className={ styles.lead }>Create an account to get started!</p>
-                <button className={ styles.gotoSigniupButton } onClick={ this.gotoSigniup }>Sign up</button>
+                <button className={ styles.gotoSigniupButton } onClick={ gotoSigniup }>Sign up</button>
             </div>
         );
     }
 }
 
-UserLogin.PropTypes = {
-    onLogin: PropTypes.func
-}
+UserLogin.propTypes = {
+    onLogin: PropTypes.func.isRequired,
+};
 
 export default UserLogin;

@@ -1,4 +1,3 @@
-import { browserHistory } from 'react-router';
 import _ from 'lodash';
 import jwt from 'json-web-token';
 
@@ -6,8 +5,8 @@ const Auth = {
     secret: 'TOPSECRETTTTT',
 
     login(data, user, socket, callback) {
-        socket.emit('user:checkPassword', data, (result) => {
-            if(!result) {
+        socket.emit('user:trylogin', data, (result) => {
+            if (!result) {
                 return alert('There was an error loging in');
             }
 
@@ -29,10 +28,12 @@ const Auth = {
 
     signup(data, socket, callback) {
         socket.emit('user:signup', data, (response) => {
-            this.encodeData(response);
+            if (response) {
+                this.encodeData(response);
+            }
 
             if (_.isFunction(callback)) {
-                callback(response)
+                callback(response);
             }
         });
     },
@@ -47,12 +48,10 @@ const Auth = {
                     this.decodeData(token, callback);
                 })
                 .on('unauthorized', (msg) => {
-                    console.error("unauthorized: " + JSON.stringify(msg.description));
+                    console.error(`unauthorized: ${JSON.stringify(msg.description)}`);
                 });
-        } else {
-            if (_.isFunction(callback)) {
-                callback(false);
-            }
+        } else if (_.isFunction(callback)) {
+            callback(false);
         }
     },
 
@@ -63,7 +62,7 @@ const Auth = {
             } else {
                 this.setSession({
                     accessToken,
-                    expiresAt: 4
+                    expiresAt: 4,
                 });
             }
         });
@@ -71,7 +70,7 @@ const Auth = {
 
     setSession(authResult) {
         if (authResult && authResult.accessToken) {
-            const expiresAt = Date.now() + (4*60*60*1000);
+            const expiresAt = Date.now() + (4 * 60 * 60 * 1000);
 
             localStorage.setItem('access_token', authResult.accessToken);
             localStorage.setItem('expires_at', expiresAt);
@@ -82,10 +81,8 @@ const Auth = {
         jwt.decode(this.secret, token, (err, decodedPayload) => {
             if (err) {
                 console.error(err.name, err.message);
-            } else {
-                if (_.isFunction(callback)) {
-                    callback(decodedPayload);
-                }
+            } else if (_.isFunction(callback)) {
+                callback(decodedPayload);
             }
         });
     },
@@ -107,6 +104,6 @@ const Auth = {
 
         return new Date().getTime() < expiresAt;
     },
-}
+};
 
 export default Auth;

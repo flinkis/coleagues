@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 
 class ScoreForm extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { 
-            newScore: []
+        this.state = {
+            newScore: [],
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -15,17 +14,17 @@ class ScoreForm extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         const { score } = nextProps;
-        this.state = { 
-            newScore: score
+        this.state = {
+            newScore: score,
         };
     }
 
     onFormSubmit(event) {
         const { newScore } = this.state;
-        const { onScoreChange, players } = this.props;
+        const { onScoreChange, players, type, uid } = this.props;
         event.preventDefault();
 
-        onScoreChange({ players, score: newScore });
+        onScoreChange({ players, type, uid, score: newScore });
     }
 
     onScoreChange(index) {
@@ -34,24 +33,25 @@ class ScoreForm extends React.Component {
 
             newScore.splice(index, 1, event.target.value);
             this.setState({
-                newScore
+                newScore,
             });
-        }
+        };
     }
 
     render() {
-        const { players, score } = this.props;
+        const { players } = this.props;
         const { newScore } = this.state;
         const inputs = players.map((name, index) => (
-            <div key={ index }>
-                <label htmlFor={`score-${index}`}>Score for {name}:</label>
-                <input type="number" id={`score-${index}`} value={newScore[index]} onChange={this.onScoreChange(index)}/>
+            <div key={ name }>
+                <label htmlFor={ `score-${index}` }>Score for { name }:</label>
+                <input type="number" id={ `score-${index}` } value={ newScore[index] } onChange={ this.onScoreChange(index) } />
             </div>
         ));
+
         return (
             <div>
-                <form onSubmit={this.onFormSubmit}>
-                    {inputs}
+                <form onSubmit={ this.onFormSubmit }>
+                    { inputs }
                     <button type="submit">Submit</button>
                 </form>
             </div>
@@ -59,10 +59,12 @@ class ScoreForm extends React.Component {
     }
 }
 
-ScoreForm.PropTypes = {
-    players: PropTypes.array,
-    score: PropTypes.array,
-    onScoreChange: PropTypes.func
-}
+ScoreForm.propTypes = {
+    players: PropTypes.array.isRequired,
+    score: PropTypes.array.isRequired,
+    type: PropTypes.string.isRequired,
+    uid: PropTypes.string.isRequired,
+    onScoreChange: PropTypes.func.isRequired,
+};
 
 export default ScoreForm;

@@ -7,31 +7,25 @@ import HomePage from './pages/home/page';
 import GamePage from './pages/game/page';
 import ScorePage from './pages/score/page';
 import SignupPage from './pages/signup/page';
+import TournamentPage from './pages/tournament/page';
+import GameTypePage from './pages/gametype/page';
 
-import Auth from './auth';
-
-//Socket
+// Socket
 const socket = io.connect();
 
-const refresh = () =>  {
+const refresh = () => {
     socket.emit('refresh');
-}
-
-let user;
-
-const setUser = (newUser) => {
-    user = newUser;
-}
-
-const getUser = () => {
-    return user;
-}
+};
 
 export default (
     <Route path="/" component={ App }>
-        <IndexRoute component={ HomePage } socket={ socket } onEnter={ refresh } getUser={ getUser } setUser={ setUser }/>
-        <Route path="create/user" component={ SignupPage } socket={ socket } getUser={ getUser } setUser={ setUser }/>
-        <Route path="create/game" component={ GamePage } socket={ socket } getUser={ getUser } />
-        <Route path="score/:uid" component={ ScorePage } socket={ socket } getUser={ getUser } />
+        <IndexRoute component={ HomePage } socket={ socket } onEnter={ refresh } />
+        <Route path="user" component={ SignupPage } socket={ socket } />
+        <Route path="game" component={ GamePage } socket={ socket } />
+        <Route path="game/:uid" component={ GamePage } socket={ socket } />
+        <Route path="tournament" component={ TournamentPage } socket={ socket } />
+        <Route path="gametype" component={ GameTypePage } socket={ socket } />
+
+        <Route path="score/:uid" component={ ScorePage } socket={ socket } />
     </Route>
 );
