@@ -13,25 +13,25 @@ const path = require('path');
 
 // Serve application file depending on environment
 app.get('/app.js', (req, res) => {
-  if (process.env.PRODUCTION) {
-    res.sendFile(path.join(__dirname, '../build', 'app.js'));
-  } else {
-    res.redirect('//localhost:9090/build/app.js');
-  }
+    if (process.env.PRODUCTION) {
+        res.sendFile(path.join(__dirname, '../build', 'app.js'));
+    } else {
+        res.redirect('//localhost:9090/build/app.js');
+    }
 });
 
 // Serve aggregate stylesheet depending on environment
 app.get('/style.css', (req, res) => {
-  if (process.env.PRODUCTION) {
-    res.sendFile(path.join(__dirname, '../build', 'style.css'));
-  } else {
-    res.redirect('//localhost:9090/build/style.css');
-  }
+    if (process.env.PRODUCTION) {
+        res.sendFile(path.join(__dirname, '../build', 'style.css'));
+    } else {
+        res.redirect('//localhost:9090/build/style.css');
+    }
 });
 
 // Serve index page
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build', 'index.html'));
+    res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 /*************************************************************
@@ -43,23 +43,24 @@ app.get('*', (req, res) => {
  *************************************************************/
 
 if (!process.env.PRODUCTION) {
-  const webpack = require('webpack');
-  const WebpackDevServer = require('webpack-dev-server');
-  const config = require('../webpack.local.config');
+    const webpack = require('webpack');
+    const WebpackDevServer = require('webpack-dev-server');
+    const config = require('../webpack.local.config');
 
-  new WebpackDevServer(webpack(config), {
-    publicPath: config.output.publicPath,
-    hot: true,
-    noInfo: true,
-    headers: { "Access-Control-Allow-Origin": "*" },
-    historyApiFallback: true
-  }).listen(9090, 'localhost', (err, result) => {
-    if (err) {
-      console.log(err);
-    }
-  });
+    new WebpackDevServer(webpack(config), {
+        publicPath: config.output.publicPath,
+        hot: true,
+        noInfo: true,
+        headers: { 
+            "Access-Control-Allow-Origin": "*" 
+        },
+        historyApiFallback: true
+    }).listen(9090, 'localhost', (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+    });
 }
-
 
 /******************
  *
@@ -69,10 +70,10 @@ if (!process.env.PRODUCTION) {
 
 const port = process.env.PORT || 8080;
 const server = app.listen(port, () => {
-  const host = server.address().address;
-  const port = server.address().port;
+    const host = server.address().address;
+    const port = server.address().port;
 
-  console.log('Listening at http://%s:%s', host, port);
+    console.log('Listening at http://%s:%s', host, port);
 });
 
 

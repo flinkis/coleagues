@@ -23,9 +23,8 @@ export default (
         <Route path="user" component={ SignupPage } socket={ socket } />
         <Route path="game" component={ GamePage } socket={ socket } />
         <Route path="game/:uid" component={ GamePage } socket={ socket } />
+        <Route path="score/:uid" component={ ScorePage } socket={ socket } />
         <Route path="tournament" component={ TournamentPage } socket={ socket } />
         <Route path="gametype" component={ GameTypePage } socket={ socket } />
-
-        <Route path="score/:uid" component={ ScorePage } socket={ socket } />
     </Route>
 );

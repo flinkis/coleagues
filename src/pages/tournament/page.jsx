@@ -8,6 +8,10 @@ class TournamnetPage extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            tournaments: [],
+        };
+
         this.handleTournamentCreated = this.handleTournamentCreated.bind(this);
     }
 
@@ -17,10 +21,11 @@ class TournamnetPage extends React.Component {
  *
  *****************/
 
-    handleTournamentCreated() {
-        this.setState({
-            go: 1,
-        });
+    handleTournamentCreated(tournament) {
+        const { tournaments } = this.state;
+
+        tournaments.push(tournament);
+        this.setState({ tournaments });
     }
 
 

@@ -11,6 +11,7 @@ class CreateGameForm extends React.Component {
             gametype: '',
             uid: '',
             score: [0, 0],
+            winner: ['', ''],
             error: '',
         };
 
@@ -23,9 +24,7 @@ class CreateGameForm extends React.Component {
         const { game } = nextProps;
 
         if (!_.isEmpty(game)) {
-            const { players, gametype, uid, score } = game;
-
-            this.setState({ players, gametype, uid, score });
+            this.setState({ ...game });
         }
     }
 
@@ -36,25 +35,22 @@ class CreateGameForm extends React.Component {
  *****************/
 
     onFormSubmit(event) {
-        const { players, gametype, uid, score } = this.state;
+        const { players, gametype, uid, score, winner } = this.state;
         event.preventDefault();
 
         if (_.every(players, player => player !== '')) {
-            this.props.onGameCreated({
-                players,
-                gametype,
-                uid,
-                score,
-            });
+            this.props.onGameCreated({ players, gametype, uid, score, winner });
         } else {
-            this.setState({ error: 'You have to name all the players.' });
+            this.setState({ error: 'You have to give a name to all contendants.' });
         }
     }
 
     onPlayerChange(index) {
         return (event) => {
             const { players } = this.state;
+
             players.splice(index, 1, event.target.value);
+
             this.setState({
                 players,
                 error: '',
@@ -64,32 +60,39 @@ class CreateGameForm extends React.Component {
 
     removePlayer(index) {
         return () => {
-            const { players } = this.state;
+            const { players, score, winner } = this.state;
+
             _.pullAt(players, index);
+            _.pullAt(score, index);
+            _.pullAt(winner, index);
+
             this.setState({
                 players,
+                score,
+                winner,
                 error: '',
             });
         };
     }
 
     addPlayer() {
-        const { players, score } = this.state;
+        const { players, score, winner } = this.state;
+
         this.setState({
             players: players.concat(['']),
             score: score.concat([0]),
+            winner: winner.concat(['']),
             error: '',
         });
     }
 
-    handleChange(event) {
+    handleChangeValueValue(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
         this.setState({ [name]: value, error: '' });
     }
-
 
 /******************
  *
@@ -100,11 +103,11 @@ class CreateGameForm extends React.Component {
     render() {
         const { players, gametype, error } = this.state;
         const { gametypes, game } = this.props;
-
         const inputs = players.map((value, i) => {
-            const uid = `input${i}`;
+            const key = `input${i}`;
+            
             return (
-                <div key={ uid }>
+                <div key={ key }>
                     <input type="text" value={ value } onChange={ this.onPlayerChange(i) } />
                     <button type="button" onClick={ this.removePlayer(i) }>-</button>
                 </div>
@@ -116,7 +119,7 @@ class CreateGameForm extends React.Component {
             <form onSubmit={ this.onFormSubmit }>
                 { error && <p>{error}</p> }
                 { inputs }
-                <select value={ gametype } name="gametype" onChange={ this.handleChange }>
+                <select value={ gametype } name="gametype" onChange={ this.handleChangeValue }>
                     { options }
                 </select>
                 <button type="button" onClick={ this.addPlayer }>add player</button>

@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const helper = require('../helper');
 
 /******************
  *
@@ -26,22 +27,12 @@ module.exports = {
 
             this.games.splice(index, 1, game);
         } else {
-            game.uid = this._getUniqueId();
+            game.uid = helper.getUniqueId(this.games);
             this.games.push(game);
         }
     },
 
     remove(uid) {
         this.games = _.reject(this.games, { uid });
-    },
-
-    _getUniqueId() {
-        let uid;
-
-        do {
-            uid = Math.random().toString(16).slice(2);
-        } while (_.some(this.games, {uid}));
-
-        return uid;
-    },
+    }
 }

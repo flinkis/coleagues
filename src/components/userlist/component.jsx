@@ -5,7 +5,7 @@ import styles from './style.css';
 
 const UserList = (props) => {
     const { users, user } = props;
-    const listItems = users.map(u => <li key={ u.uid } className={ u.uid === user.uid && styles.active }>{ u.name } / { u.uid }</li>);
+    const listItems = users.map(u => <li key={ u.uid } className={ u.uid === user.uid && styles.active }>{ u.name }</li>);
 
     return (
         <div >

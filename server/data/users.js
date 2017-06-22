@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const helper = require('../helper');
 
 /******************
  *
@@ -22,7 +23,7 @@ module.exports = {
         const { name, password } = data;
         const user = _.find(this.usersFromDB, { name });
 
-        return user && user.password === this._hashEncode(password) ? user.uid : false;
+        return user && user.password === thelper.hashEncode(password) ? user.uid : false;
     },
 
     isUserLogedin(data) {
@@ -40,7 +41,7 @@ module.exports = {
     },
 
     getGuestUser() {
-        const uid = this._getUniqueId();
+        const uid = helper.getUniqueId(this.usersFromDB);
         let name,
             nextUserId = 1;
 
@@ -65,8 +66,8 @@ module.exports = {
 
     signup(user, newUser, callback) {
         const { password } = newUser;
-        newUser.password = this._hashEncode(password);
-        newUser.uid = this._getUniqueId();
+        newUser.password = helper.hashEncode(password);
+        newUser.uid = helper.getUniqueId(this.userinDB);
 
         this.usersFromDB.push(newUser);
         this.update(user, newUser);
@@ -76,37 +77,5 @@ module.exports = {
 
     remove(uid) {
         this.currentUsers = _.reject(this.currentUsers, { uid });
-    },
-
-/******************
- * Private
- *****************/
-
-    _getUniqueId() {
-        let uid;
-
-        do {
-            uid = Math.random().toString(16).slice(2);
-        } while (_.some(this.usersFromDB, {uid}));
-
-        return uid;
-    },
-
-    _hashEncode(word) {
-        let hash = 0;
-        if (word.length === 0) {
-            return hash;
-        }
-
-        let index = 0, 
-            chr;
-
-        for (index; index < word.length; index++) {
-            chr   = word.charCodeAt(index);
-            hash  = ((hash << 5) - hash) + chr;
-            hash |= 0;
-        }
-
-        return hash;
     }
 };

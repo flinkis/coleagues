@@ -7,9 +7,8 @@ const GameTypes = require('./data/gametypes');
 
 // export function for listening to the socket
 module.exports = (socket) => {
-    let currentUser = Users.getGuestUser();
-
     const secret = 'TOPSECRETTTTT';
+    let currentUser = Users.getGuestUser();
 
 /******************
  *
@@ -60,7 +59,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * User calls
+ * User
  *
  *****************/
 
@@ -85,6 +84,7 @@ module.exports = (socket) => {
                 user: oldUser, 
                 newUser: { name, uid }
             });
+
             currentUser = { name, uid };
         } else {
             socket.emit('message', { type: 'missing_variable', description: '"newUser" not found in payload, [user:update]' });
@@ -132,7 +132,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * Game calls
+ * Game
  *
  *****************/
 
@@ -167,7 +167,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * GameType calls
+ * GameType
  *
  *****************/
 
@@ -207,6 +207,13 @@ module.exports = (socket) => {
             socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [gametype:getById]' });
         }
     });
+
+/******************
+ *
+ * Tournament
+ *
+ *****************/
+
 
 /******************
  *
