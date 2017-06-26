@@ -19,11 +19,15 @@ module.exports = {
         return _.find(this.usersFromDB, { uid });
     },
 
+    getAll() {
+        return _.map(this.usersFromDB, user => ({ uid: user.uid, name: user.name }));
+    },
+
     checkPassword(data) {
         const { name, password } = data;
         const user = _.find(this.usersFromDB, { name });
 
-        return user && user.password === thelper.hashEncode(password) ? user.uid : false;
+        return user && user.password === helper.hashEncode(password) ? user.uid : false;
     },
 
     isUserLogedin(data) {

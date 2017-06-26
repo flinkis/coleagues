@@ -13,6 +13,7 @@ class GamePage extends React.Component {
         };
 
         this.handleGameCreated = this.handleGameCreated.bind(this);
+        this.updateGames = this.updateGames.bind(this);
     }
 
     componentWillMount() {
@@ -53,6 +54,10 @@ class GamePage extends React.Component {
 
             browserHistory.push('/');
         });
+    }
+
+    updateGames(game) {
+        this.setState({ game });
     }
 
 /******************

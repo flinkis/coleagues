@@ -66,7 +66,7 @@ class GameTypeForm extends React.Component {
 
                 <label htmlFor="type">Type of game:</label>
                 <select value={ type } name="type" onChange={ this.handleChange }>
-                    <option value={ 0 }>Highest score wins</option>
+                    <option value={ 0 }>High Score Wins</option>
                     <option value={ 1 }>Lowest Score Wins</option>
                 </select>
 

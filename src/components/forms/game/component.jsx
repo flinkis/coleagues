@@ -103,9 +103,9 @@ class CreateGameForm extends React.Component {
     render() {
         const { players, gametype, error } = this.state;
         const { gametypes, game } = this.props;
+
         const inputs = players.map((value, i) => {
             const key = `input${i}`;
-            
             return (
                 <div key={ key }>
                     <input type="text" value={ value } onChange={ this.onPlayerChange(i) } />

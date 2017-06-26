@@ -160,7 +160,7 @@ module.exports = {
         //
         "indent": [1, 4], // this option sets a specific tab width for your code (off by default)
         "brace-style": 1, // enforce one true brace style (off by default)
-        "camelcase": 1, // require camel case names
+        "camelcase": 0, // require camel case names
         "comma-spacing": [1, {"before": false, "after": true}], // enforce spacing before and after comma
         "comma-style": [1, "last"], // enforce one true comma style (off by default)
         "consistent-this": [1, "_this"], // enforces consistent naming when capturing the current execution context (off by default)

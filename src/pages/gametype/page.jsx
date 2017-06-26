@@ -44,7 +44,6 @@ class GameTypePage extends React.Component {
     }
 
     removeGameType(response) {
-        console.log(response);
         const { gametypes } = this.state;
         const { uid } = response;
         const newGameTypes = _.reject(gametypes, { uid });
@@ -112,7 +111,7 @@ class GameTypePage extends React.Component {
         const { gametypes, gametype } = this.state;
         const listItems = gametypes.map((current) => {
             const { name, description, type, uid } = current;
-            const typeText = ['Highest score wins', 'Lowest score wins'];
+            const typeText = ['High Score Wins', 'Lowest Score Wins'];
             return (
                 <li key={ uid }>
                     { name } { description } { typeText[type] }

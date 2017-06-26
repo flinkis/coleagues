@@ -4,6 +4,7 @@ const jwt = require('json-web-token');
 const Users = require('./data/users');
 const Games = require('./data/games');
 const GameTypes = require('./data/gametypes');
+const Tournaments = require('./data/tournaments');
 
 // export function for listening to the socket
 module.exports = (socket) => {
@@ -123,6 +124,12 @@ module.exports = (socket) => {
         }
     });
 
+    socket.on('user:request', (callback) => {
+        const users = Users.getAll();
+
+        testAndDoCallback(callback, { users }, 'user:request');
+    });
+
     socket.on('user:logout', (data) => {
         const { uid } = data;
 
@@ -214,6 +221,42 @@ module.exports = (socket) => {
  *
  *****************/
 
+    socket.on('tournament:update', (data, callback) => {
+        Tournaments.update(data);
+        socket.broadcast.emit('tournament:update', data);
+
+        const tournaments = Tournaments.getAll();
+
+        testAndDoCallback(callback, { tournaments }, 'tournament:update');
+    });
+
+    socket.on('tournament:remove', (data) => {
+        const { uid } = data;
+        if (!!uid) {
+            Tournaments.remove(uid);
+            socket.broadcast.emit('tournament:remove', { uid });
+        } else {
+            socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [tournament:remove]' });
+        }
+    });
+
+    socket.on('tournament:request', (callback) => {
+        const tournaments = Tournaments.getAll();
+
+        testAndDoCallback(callback, { tournaments }, 'tournament:request');
+    });
+
+    socket.on('tournament:getById', (data, callback) => {
+        const { uid } = data;
+
+        if (!!uid) {
+            const tournament = Tournaments.getById(uid);
+
+            testAndDoCallback(callback, { tournament }, 'tournament:getById');
+        } else {
+            socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [tournament:getById]' });
+        }
+    });
 
 /******************
  *
