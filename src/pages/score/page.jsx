@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Link, browserHistory } from 'react-router';
 
 import ScoreForm from '../../components/forms/score/component';
-import Hej from '../../components/hej';
 
 class ScorePage extends React.Component {
     constructor(props) {
@@ -77,10 +76,8 @@ class ScorePage extends React.Component {
             <div>
                 <h1>Report score</h1>
                 <p>Report your score and get your standing.</p>
-                <Link to="/">Go back</Link>
+                <Link to="/">Home</Link>
                 <ScoreForm onScoreChange={ this.hanleScoreChange } game={ game } />
-                <Hej name="anders" name2="Daniel" />
-
             </div>
         );
     }

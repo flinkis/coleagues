@@ -43,7 +43,7 @@ class SignupPage extends Component {
                 <h1 className={ styles.heading }>Create account</h1>
                 <p className={ styles.lead }>Join the fun!</p>
                 <UserSignup onSignup={ this.handleSignup } />
-                <Link to="/" >Nevermind</Link>
+                <Link to="/" >Home</Link>
             </div>
         );
     }

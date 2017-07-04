@@ -7,7 +7,8 @@ import Home from './pages/home/page';
 import Game from './pages/game/page';
 import Score from './pages/score/page';
 import Signup from './pages/signup/page';
-import Tournament from './pages/tournament/page';
+import TournamentCreate from './pages/tournamentCreate/page';
+import TournamentList from './pages/tournamentList/page';
 import GameType from './pages/gametype/page';
 
 // Socket
@@ -24,7 +25,8 @@ export default (
         <Route path="game" component={ Game } socket={ socket } />
         <Route path="game/:uid" component={ Game } socket={ socket } />
         <Route path="score/:uid" component={ Score } socket={ socket } />
-        <Route path="tournament" component={ Tournament } socket={ socket } />
+        <Route path="tournament" component={ TournamentCreate } socket={ socket } />
+        <Route path="tournament/:uid" component={ TournamentList } socket={ socket } />
         <Route path="gametype" component={ GameType } socket={ socket } />
     </Route>
 );

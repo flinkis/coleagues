@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 
 import styles from './style.css';
+import general_style from '../../../style/general.css';
 
 const GamesList = (props) => {
     const { onGameRemoved, games } = props;
@@ -12,7 +13,7 @@ const GamesList = (props) => {
         const players = _.chain(participants).map(item => `${item.name} (${item.score || 0})`).join(' vs. ').value();
 
         return (
-            <li key={ uid }>
+            <li className={ styles.gameslist } key={ uid }>
                 <Link to={ `score/${uid}` }>{ players }</Link>
                 <Link to={ `game/${uid}` }>Edit</Link>
                 <span role="button" tabIndex="0" onClick={ onGameRemoved(uid) }>Remove</span>
@@ -23,7 +24,9 @@ const GamesList = (props) => {
     return (
         <div >
             <h3> Games </h3>
-            <ul className={ styles.gameslist }>{ listItems }</ul>
+            <ul className={ general_style.list }>
+                { listItems }
+            </ul>
         </div>
     );
 };

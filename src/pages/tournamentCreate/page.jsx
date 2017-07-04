@@ -20,6 +20,7 @@ class TournamnetPage extends React.Component {
 
         this.handleTournamentChange = this.handleTournamentChange.bind(this);
         this.handleTournamentEdit = this.handleTournamentEdit.bind(this);
+        this.handleTournamentDuplicate = this.handleTournamentDuplicate.bind(this);
         this.handleTournamentRemove = this.handleTournamentRemove.bind(this);
 
         this.removeTournament = this.removeTournament.bind(this);
@@ -110,6 +111,20 @@ class TournamnetPage extends React.Component {
         };
     }
 
+    handleTournamentDuplicate(uid) {
+        return () => {
+            const { socket } = this.props.route;
+
+            socket.emit('tournament:getById', { uid }, (response) => {
+                const { tournament } = response;
+
+                tournament.uid = null;
+
+                this.setState({ tournament });
+            });
+        };
+    }
+
     handleTournamentRemove(uid) {
         return () => {
             const { tournaments } = this.state;
@@ -137,7 +152,8 @@ class TournamnetPage extends React.Component {
                     <p>{ description }</p>
                     <div className={ styles.actions }>
                         <button type="button" onClick={ this.handleTournamentEdit(uid) }>edit</button>
-                        <button type="button" onClick={ this.handleTournamentRemove(uid) }>-</button>
+                        <button type="button" onClick={ this.handleTournamentDuplicate(uid) }>duplicate</button>
+                        <button type="button" onClick={ this.handleTournamentRemove(uid) }>remove</button>
                     </div>
                 </li>
             );
@@ -146,7 +162,7 @@ class TournamnetPage extends React.Component {
         return (
             <div>
                 <h1>Create Tournament</h1>
-                <Link to="/">Go Home</Link>
+                <Link to="/">Home</Link>
                 <CreateTournamnentForm onTournamentChange={ this.handleTournamentChange } selectedTournament={ tournament } gameTypes={ gametypes } users={ users } />
                 <h3>Tournaments</h3>
                 <ul className={ styles.liststyle }>

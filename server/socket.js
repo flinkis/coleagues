@@ -13,7 +13,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * Emit Init and send all data to client
+ * Emit Init and send ALL data to client
  *
  *****************/
 
@@ -26,7 +26,8 @@ module.exports = (socket) => {
         socket.emit('init', {
             user: currentUser,
             users: Users.getCurrent(),
-            games: Games.getAll()
+            games: Games.getAll(),
+            tournaments: Tournaments.getAll(),
         })
     });
 

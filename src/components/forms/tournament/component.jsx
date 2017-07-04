@@ -8,6 +8,7 @@ class CreateTournamnentForm extends React.Component {
 
         this.state = {
             tournament: {
+                uid: null,
                 name: '',
                 description: '',
                 start_date: '',
@@ -25,6 +26,7 @@ class CreateTournamnentForm extends React.Component {
         this.addParticipants = this.addParticipants.bind(this);
         this.removeParticipants = this.removeParticipants.bind(this);
         this.getDefaultParticipant = this.getDefaultParticipant.bind(this);
+        this.clearForm = this.clearForm.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -59,16 +61,7 @@ class CreateTournamnentForm extends React.Component {
         event.preventDefault();
 
         onTournamentChange(tournament);
-        this.setState({
-            tournament: {
-                name: '',
-                description: '',
-                start_date: '',
-                end_date: '',
-                participants: [],
-                game_type: '',
-            },
-        });
+        this.clearForm();
     }
 
     getDefaultParticipant(tournament) {
@@ -79,6 +72,20 @@ class CreateTournamnentForm extends React.Component {
             .first()
             .defaultTo({})
             .value();
+    }
+
+    clearForm() {
+        this.setState({
+            tournament: {
+                uid: null,
+                name: '',
+                description: '',
+                start_date: '',
+                end_date: '',
+                participants: [],
+                game_type: '',
+            },
+        });
     }
 
     handleValueChange(event) {
@@ -171,9 +178,9 @@ class CreateTournamnentForm extends React.Component {
                 <select value={ participant.uid } name="participants" onChange={ this.handleParticipantsChange }>
                     { users_options }
                 </select>
-                <button type="button" onClick={ this.addParticipants }>Add participants</button>
-
-                <button type="submit">{ _.isUndefined(tournament.uid) ? 'Start tournament' : 'Update tournament' }</button>
+                <button type="button" onClick={ this.addParticipants }>Add participants</button><br />
+                <button type="submit">{ _.isNull(tournament.uid) ? 'Start tournament' : 'Update tournament' }</button>
+                <button type="button" onClick={ this.clearForm }>clear</button>
             </form>
         );
     }

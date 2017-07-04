@@ -131,7 +131,7 @@ class GameTypePage extends React.Component {
         return (
             <div>
                 <h1>Create Game Type</h1>
-                <Link to="/">Go Home</Link>
+                <Link to="/">Home</Link>
                 <GameTypeForm onGameTypeChange={ this.handleGameTypeChange } gametype={ gametype } scoring={ scoring } />
                 <h3> Games Type </h3>
                 <ul className={ styles.liststyle }>{ listItems }</ul>

@@ -80,7 +80,7 @@ class GamePage extends React.Component {
             <div>
                 <h1>Create Game</h1>
                 <p>Create a game and get started!</p>
-                <Link to="/">Go Home</Link>
+                <Link to="/">Home</Link>
                 <GameForm onGameCreated={ this.handleGameCreated } game={ game } gametypes={ gametypes } users={ users } />
             </div>
         );

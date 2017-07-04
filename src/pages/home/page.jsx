@@ -6,8 +6,9 @@ import _ from 'lodash';
 import styles from './styles.css';
 
 import UserLogin from '../../components/forms/login/component';
-import UserList from '../../components/userlist/component';
-import GamesList from '../../components/gameslist/component';
+import UserList from '../../components/list/users/component';
+import GamesList from '../../components/list/games/component';
+import TournamentsList from '../../components/list/tournaments/component';
 
 import Auth from '../../auth';
 
@@ -18,6 +19,7 @@ class HomePage extends React.Component {
             users: [],
             loggedIn: false,
             games: [],
+            tournaments: [],
         };
 
         this.handleUserLogin = this.handleUserLogin.bind(this);
@@ -64,12 +66,13 @@ class HomePage extends React.Component {
     }
 
     initialize(response) {
-        const { user, users, games } = response;
+        const { user, users, games, tournaments } = response;
 
         this.setState({
             user,
             users,
             games,
+            tournaments,
         });
     }
 
@@ -176,7 +179,7 @@ class HomePage extends React.Component {
  *****************/
 
     render() {
-        const { users, loggedIn, games, user } = this.state;
+        const { users, loggedIn, games, user, tournaments } = this.state;
         const username = user ? user.name : '';
 
         return (
@@ -189,10 +192,11 @@ class HomePage extends React.Component {
                     <button onClick={ this.handleLogout }>Log out</button>
                 }
 
-                <br /><Link to="/game">Create game</Link>
-                <br /><Link to="/gametype">Create game type</Link>
-                <br /><Link to="/tournament">Create tournament</Link>
+                <br /><Link to="/game">Create/Edit Duel</Link>
+                <br /><Link to="/gametype">Create/Edit Game-type</Link>
+                <br /><Link to="/tournament">Create/Edit Tournament</Link>
 
+                <TournamentsList tournaments={ tournaments } />
                 <GamesList games={ games } onGameRemoved={ this.handleGameRemoved } />
             </div>
         );
