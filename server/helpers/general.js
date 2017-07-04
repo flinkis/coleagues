@@ -33,5 +33,14 @@ module.exports = {
         }
 
         return hash;
+    },
+
+    testAndDoCallback(callback, payload, caller) {
+        if (_.isFunction(callback)) {
+            callback(payload);
+        } else {
+            socket.emit('message', { type: 'missing_callback', description: 'callback missing from [' + caller + ']' });
+            return;
+        }
     }
 }

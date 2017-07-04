@@ -6,6 +6,8 @@ const Games = require('./data/games');
 const GameTypes = require('./data/gametypes');
 const Tournaments = require('./data/tournaments');
 
+const Helper = require('./helpers/general');
+
 // export function for listening to the socket
 module.exports = (socket) => {
     const secret = 'TOPSECRETTTTT';
@@ -71,7 +73,7 @@ module.exports = (socket) => {
         socket.broadcast.emit('user:update', { user: currentUser, newUser });
         currentUser = newUser;
 
-        testAndDoCallback(callback, { newUser }, 'user:getNewGuest');
+        Helper.testAndDoCallback(callback, { newUser }, 'user:getNewGuest');
     });
 
     socket.on('user:update', (data) => {
@@ -102,10 +104,10 @@ module.exports = (socket) => {
                     socket.broadcast.emit('user:update', { user: currentUser, newUser: { name, uid }});
                     currentUser = { name, uid };
 
-                    testAndDoCallback(callback, { name, uid }, 'user:signup');
+                    Helper.testAndDoCallback(callback, { name, uid }, 'user:signup');
                 });
             } else {
-                testAndDoCallback(callback, false, 'user:signup');
+                Helper.testAndDoCallback(callback, false, 'user:signup');
             }
 
         } else {
@@ -119,16 +121,16 @@ module.exports = (socket) => {
         if (uid && isUserLogedin) {
             const loggedInUser = Users.getById(uid);
 
-            testAndDoCallback(callback, { loggedInUser }, 'user:checkPassword');
+            Helper.testAndDoCallback(callback, { loggedInUser }, 'user:checkPassword');
         } else {
-            testAndDoCallback(callback, false, 'user:checkPassword');
+            Helper.testAndDoCallback(callback, false, 'user:checkPassword');
         }
     });
 
     socket.on('user:request', (callback) => {
         const users = Users.getAll();
 
-        testAndDoCallback(callback, { users }, 'user:request');
+        Helper.testAndDoCallback(callback, { users }, 'user:request');
     });
 
     socket.on('user:logout', (data) => {
@@ -160,7 +162,7 @@ module.exports = (socket) => {
         if (!!uid) {
             const game = Games.getById(uid);
 
-            testAndDoCallback(callback, { game }, 'game:getById');
+            Helper.testAndDoCallback(callback, { game }, 'game:getById');
         } else {
             socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [game:getById]' });
         }
@@ -169,14 +171,14 @@ module.exports = (socket) => {
     socket.on('game:request', (callback) => {
         const games = Games.getAll();
 
-        testAndDoCallback(callback, { games }, 'game:request');
+        Helper.testAndDoCallback(callback, { games }, 'game:request');
     });
 
     socket.on('game:update', (data, callback) => {
         Games.update(data)
         socket.broadcast.emit('game:update', data);
 
-        testAndDoCallback(callback, true, 'game:update');
+        Helper.testAndDoCallback(callback, true, 'game:update');
     });
 
 /******************
@@ -191,7 +193,7 @@ module.exports = (socket) => {
 
         const gametypes = GameTypes.getAll();
 
-        testAndDoCallback(callback, { gametypes }, 'gametype:update');
+        Helper.testAndDoCallback(callback, { gametypes }, 'gametype:update');
     });
 
     socket.on('gametype:remove', (data) => {
@@ -207,7 +209,7 @@ module.exports = (socket) => {
     socket.on('gametype:request', (callback) => {
         const gametypes = GameTypes.getAll();
 
-        testAndDoCallback(callback, { gametypes }, 'gametype:request');
+        Helper.testAndDoCallback(callback, { gametypes }, 'gametype:request');
     });
 
     socket.on('gametype:getById', (data, callback) => {
@@ -216,7 +218,7 @@ module.exports = (socket) => {
         if (!!uid) {
             const gametype = GameTypes.getById(uid);
 
-            testAndDoCallback(callback, { gametype }, 'gametype:getById');
+            Helper.testAndDoCallback(callback, { gametype }, 'gametype:getById');
         } else {
             socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [gametype:getById]' });
         }
@@ -225,7 +227,7 @@ module.exports = (socket) => {
     socket.on('gametype:scoring', (callback) => {
         const scoring = GameTypes.getScoring();
 
-        testAndDoCallback(callback, { scoring }, 'gametype:request');
+        Helper.testAndDoCallback(callback, { scoring }, 'gametype:request');
     });
 
 /******************
@@ -240,7 +242,7 @@ module.exports = (socket) => {
 
         const tournaments = Tournaments.getAll();
 
-        testAndDoCallback(callback, { tournaments }, 'tournament:update');
+        Helper.testAndDoCallback(callback, { tournaments }, 'tournament:update');
     });
 
     socket.on('tournament:remove', (data) => {
@@ -256,7 +258,7 @@ module.exports = (socket) => {
     socket.on('tournament:request', (callback) => {
         const tournaments = Tournaments.getAll();
 
-        testAndDoCallback(callback, { tournaments }, 'tournament:request');
+        Helper.testAndDoCallback(callback, { tournaments }, 'tournament:request');
     });
 
     socket.on('tournament:getById', (data, callback) => {
@@ -265,24 +267,26 @@ module.exports = (socket) => {
         if (!!uid) {
             const tournament = Tournaments.getById(uid);
 
-            testAndDoCallback(callback, { tournament }, 'tournament:getById');
+            Helper.testAndDoCallback(callback, { tournament }, 'tournament:getById');
         } else {
             socket.emit('message', { type: 'missing_variable', description: '"uid" not found in payload, [tournament:getById]' });
         }
     });
 
-/******************
- *
- * Helper
- *
- *****************/
+    socket.on('tournament:start', (data, callback) => {
+        const { tournament, type } = data;
 
-    const testAndDoCallback = (callback, payload, caller) => {
-        if (_.isFunction(callback)) {
-            callback(payload);
-        } else {
-            socket.emit('message', { type: 'missing_callback', description: 'callback missing from [' + caller + ']' });
-            return;
+        if (!!tournament && !!type) {
+            const paring = Tournaments.getParings(type, tournament);
+
+            Games.bulkUpdate(paring, { tournament: tournament.uid }, (games) => {
+                if(games) {
+                    Tournaments.update(data);
+                    socket.broadcast.emit('tournament:update', data);
+
+                    Helper.testAndDoCallback(callback, { games }, 'tournament:getById');
+                }
+            });
         }
-    }
+    });
 };

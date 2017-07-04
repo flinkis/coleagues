@@ -2,7 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import _ from 'lodash';
+
 import Auth from '../../auth';
+
+import ParticipantList from '../../components/list/participants/component';
+import GamesList from '../../components/list/games/component';
 
 class TournamnetList extends React.Component {
     constructor(props) {
@@ -11,6 +15,7 @@ class TournamnetList extends React.Component {
         this.state = {
             tournament: {},
             authenticatedUser: {},
+            games: [],
         };
 
         this.signup = this.signup.bind(this);
@@ -23,11 +28,20 @@ class TournamnetList extends React.Component {
 
         socket.emit('tournament:getById', { uid }, (result) => {
             const { tournament } = result;
-            this.setState({ tournament });
+            if (tournament) {
+                socket.emit('game:request', (games) => {
+                    this.setState({
+                        games: _.filter(games, { tournament: tournament.uid }),
+                        tournament,
+                    });
+                });
+            }
         });
 
         socket.on('tournament:update', (tournament) => {
-            this.setState({ tournament });
+            if (tournament.uid === uid) {
+                this.setState({ tournament });
+            }
         });
 
         Auth.handleAuthentication(socket, (authenticatedUser) => {
@@ -52,16 +66,23 @@ class TournamnetList extends React.Component {
 
     startTournament() {
         const { tournament } = this.state;
+        const { socket } = this.props.route;
+
         tournament.active = true;
 
-        this.setState({ tournament });
+        socket.on('tournament:start', { tournament, type: 'robin' }, (respons) => {
+            if (respons) {
+                const { games } = respons;
+                this.setState({
+                    games: _.filter(games, { tournament: tournament.uid }),
+                    tournament,
+                });
+            }
+        });
     }
 
     render() {
-        const { tournament, authenticatedUser } = this.state;
-        const participating = !_.isEmpty(authenticatedUser) && !_.some(tournament.participants, ['uid', authenticatedUser.uid]);
-        const participantList = _.isEmpty(tournament.participants) ?
-            null : tournament.participants.map(participant => <li key={ participant.uid }>{ participant.name }</li>);
+        const { tournament, authenticatedUser, games } = this.state;
 
         return (
             <div>
@@ -71,18 +92,9 @@ class TournamnetList extends React.Component {
                 <p> Start Date: { tournament.start_date } </p>
                 <p> End Date: { tournament.end_date } </p>
 
-                { participating &&
-                    <div>
-                        <p>Loged in as { authenticatedUser.name }</p>
-                        <button onClick={ this.signup }>Sign up</button>
-                    </div>
-                }
-                <h3>Participants</h3>
-                <ul>
-                    { _.isEmpty(tournament.participants) ? 'No one has signed up play in the tournament.' : participantList }
-                </ul>
-
                 { !tournament.active && <button type="button" onClick={ this.startTournament }>Lock players and start tournament</button> }
+                <ParticipantList authenticatedUser={ authenticatedUser } tournament={ tournament } signup={ this.signup } />
+                <GamesList games={ games } />
             </div>
         );
     }

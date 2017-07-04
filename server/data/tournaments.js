@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const Helper = require('../helpers/general');
-const Games = require('./games');
-const { robin } = require('../helpers/seeding');
+const { fair, robin } = require('../helpers/seeding');
+
 
 /******************
  *
@@ -30,21 +30,21 @@ module.exports = {
             const { participants, gametype } = tournament;
             tournament.uid = Helper.getUniqueId(this.tournaments);
             this.tournaments.push(tournament);
-
-            _.each(robin(participants), (rounds, index) => {
-                _.each(rounds, (participants) => {
-                    Games.update({
-                        participants, 
-                        gametype, 
-                        tournament: tournament.uid, 
-                        round: index,
-                    });
-                });
-            });
         }
     },
 
     remove(uid) {
         this.tournaments = _.reject(this.tournaments, { uid });
+    },
+
+    getParing(type, tournament) {
+        const { participants } = tournament;
+
+        switch(type) {
+            case "robin":
+                return robin(participants);
+            case "fair":
+                return fair(participants);
+        }
     }
 }

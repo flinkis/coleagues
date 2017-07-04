@@ -31,6 +31,8 @@ class HomePage extends React.Component {
         this.userChanged = this.userChanged.bind(this);
         this.removeGame = this.removeGame.bind(this);
         this.updateGames = this.updateGames.bind(this);
+        this.updateTournaments = this.updateTournaments.bind(this);
+        this.removeTournament = this.removeTournament.bind(this);
     }
 
 /******************
@@ -49,6 +51,8 @@ class HomePage extends React.Component {
         socket.on('user:update', this.userChanged);
         socket.on('game:remove', this.removeGame);
         socket.on('game:update', this.updateGames);
+        socket.on('tournament:update', this.updateTournaments);
+        socket.on('tournament:remove', this.removeTournament);
 
         Auth.handleAuthentication(socket, (authenticatedUser) => {
             if (authenticatedUser && authenticatedUser !== user) {
@@ -117,6 +121,27 @@ class HomePage extends React.Component {
         }
 
         this.setState({ games });
+    }
+
+    updateTournaments(tournament) {
+        const { tournaments } = this.state;
+        const oldTournament = _.find(tournaments, { uid: tournament.uid });
+
+        if (oldTournament) {
+            tournaments.splice(tournaments.indexOf(oldTournament), 1, tournament);
+        } else {
+            tournaments.push(tournament);
+        }
+
+        this.setState({ tournaments });
+    }
+
+    removeTournament(response) {
+        const { tournaments } = this.state;
+        const { uid } = response;
+        const newTournaments = _.reject(tournaments, { uid });
+
+        this.setState({ tournaments: newTournaments });
     }
 
 /******************
@@ -197,7 +222,7 @@ class HomePage extends React.Component {
                 <br /><Link to="/tournament">Create/Edit Tournament</Link>
 
                 <TournamentsList tournaments={ tournaments } />
-                <GamesList games={ games } onGameRemoved={ this.handleGameRemoved } />
+                <GamesList games={ games } onGameRemoved={ this.handleGameRemoved } edit />
             </div>
         );
     }

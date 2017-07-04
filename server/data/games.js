@@ -32,5 +32,22 @@ module.exports = {
 
     remove(uid) {
         this.games = _.reject(this.games, { uid });
+    },
+
+    bulkUpdate(pairing, extention = {}, callback) {
+        _.each(pairing, (rounds, index) => {
+            _.each(rounds, (participants) => {
+                let game = _.assign({
+                    participants, 
+                    gametype, 
+                    round: index,
+                }, extention);
+                this.update(game);
+            });
+        });
+
+        if(_.isFunction(callback)) {
+            callback(this.games);
+        }
     }
 }

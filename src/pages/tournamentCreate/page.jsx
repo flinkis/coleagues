@@ -15,6 +15,7 @@ class TournamnetPage extends React.Component {
             tournaments: [],
             tournament: {},
             gametypes: [],
+            tournamentType: [],
             users: [],
         };
 
@@ -143,7 +144,7 @@ class TournamnetPage extends React.Component {
  *****************/
 
     render() {
-        const { tournaments, tournament, gametypes, users } = this.state;
+        const { tournaments, tournament, gametypes, tournamentType, users } = this.state;
         const listItems = tournaments.map((item) => {
             const { name, description, uid } = item;
             return (
@@ -163,7 +164,15 @@ class TournamnetPage extends React.Component {
             <div>
                 <h1>Create Tournament</h1>
                 <Link to="/">Home</Link>
-                <CreateTournamnentForm onTournamentChange={ this.handleTournamentChange } selectedTournament={ tournament } gameTypes={ gametypes } users={ users } />
+
+                <CreateTournamnentForm
+                  onTournamentChange={ this.handleTournamentChange }
+                  selectedTournament={ tournament }
+                  gameTypes={ gametypes }
+                  tournamentType={ tournamentType }
+                  users={ users }
+                />
+
                 <h3>Tournaments</h3>
                 <ul className={ styles.liststyle }>
                     { listItems }

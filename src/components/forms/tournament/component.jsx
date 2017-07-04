@@ -135,14 +135,17 @@ class CreateTournamnentForm extends React.Component {
 
     render() {
         const { tournament, participant, error } = this.state;
-        const { gameTypes, users } = this.props;
-        const types_options = gameTypes.map(type => <option key={ type.uid } value={ type.uid }>{ type.name }</option>);
+        const { gameTypes, tournamentTypes, users } = this.props;
+
+        const makeOptions = type => <option key={ type.uid } value={ type.uid }>{ type.name }</option>;
+        const game_types_options = gameTypes.map(makeOptions);
+        const tournament_types_options = tournamentTypes.map(makeOptions);
         const users_options = _.chain(users)
             .sortBy('name')
             .reject(user => !!_.find(tournament.participants, user))
-            .map(user => <option key={ user.uid } value={ user.uid }>{ user.name }</option>)
-            .defaultTo('')
+            .map(makeOptions)
             .value();
+
         const participants = tournament.participants.map((user, index) => (
             <li key={ user.uid } >
                 { user.name } <button type="button" onClick={ this.removeParticipants(index) }>-</button>
@@ -154,20 +157,25 @@ class CreateTournamnentForm extends React.Component {
                 { error && <p>{error}</p> }
 
                 <label htmlFor="name">Tournament name:</label>
-                <input type="text" name="name" value={ tournament.name } onChange={ this.handleValueChange } />
+                <input id="name" type="text" name="name" value={ tournament.name } onChange={ this.handleValueChange } />
 
                 <label htmlFor="description">Game type description:</label>
-                <textarea name="description" value={ tournament.description } onChange={ this.handleValueChange } />
+                <textarea id="description" name="description" value={ tournament.description } onChange={ this.handleValueChange } />
 
                 <label htmlFor="start_date">Start date:</label>
-                <input type="date" name="start_date" value={ tournament.start_date } onChange={ this.handleValueChange } />
+                <input id="start_date" type="date" name="start_date" value={ tournament.start_date } onChange={ this.handleValueChange } />
 
                 <label htmlFor="end_date">End date:</label>
-                <input type="date" name="end_date" value={ tournament.end_date } onChange={ this.handleValueChange } />
+                <input id="end_date" type="date" name="end_date" value={ tournament.end_date } onChange={ this.handleValueChange } />
 
                 <label htmlFor="game_type">Game type:</label>
-                <select value={ tournament.game_type } name="game_type" onChange={ this.handleValueChange }>
-                    { types_options }
+                <select id="game_type" value={ tournament.game_type } name="game_type" onChange={ this.handleValueChange }>
+                    { game_types_options }
+                </select>
+
+                <label htmlFor="tournament_type">Tournament type:</label>
+                <select value={ tournament.tournament_type } name="tournament_type" onChange={ this.handleValueChange }>
+                    { tournament_types_options }
                 </select>
 
                 <h3>Participants</h3>
@@ -190,12 +198,14 @@ CreateTournamnentForm.propTypes = {
     onTournamentChange: PropTypes.func.isRequired,
     selectedTournament: PropTypes.object,
     gameTypes: PropTypes.array,
+    tournamentTypes: PropTypes.array,
     users: PropTypes.array,
 };
 
 CreateTournamnentForm.defaultProps = {
     selectedTournament: {},
     gameTypes: [],
+    tournamentTypes: [],
     users: [],
 };
 

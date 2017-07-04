@@ -7,7 +7,7 @@ import styles from './style.css';
 import general_style from '../../../style/general.css';
 
 const GamesList = (props) => {
-    const { onGameRemoved, games } = props;
+    const { onGameRemoved, edit, games } = props;
     const listItems = games.map((game) => {
         const { participants, uid } = game;
         const players = _.chain(participants).map(item => `${item.name} (${item.score || 0})`).join(' vs. ').value();
@@ -15,8 +15,8 @@ const GamesList = (props) => {
         return (
             <li className={ styles.gameslist } key={ uid }>
                 <Link to={ `score/${uid}` }>{ players }</Link>
-                <Link to={ `game/${uid}` }>Edit</Link>
-                <span role="button" tabIndex="0" onClick={ onGameRemoved(uid) }>Remove</span>
+                { edit && <Link to={ `game/${uid}` }>Edit</Link> }
+                { onGameRemoved && <span role="button" tabIndex="0" onClick={ onGameRemoved(uid) }>Remove</span> }
             </li>
         );
     });
@@ -33,7 +33,13 @@ const GamesList = (props) => {
 
 GamesList.propTypes = {
     games: PropTypes.array.isRequired,
-    onGameRemoved: PropTypes.func.isRequired,
+    onGameRemoved: PropTypes.func,
+    edit: PropTypes.bool,
+};
+
+GamesList.defaultProps = {
+    onGameRemoved: null,
+    edit: false,
 };
 
 export default GamesList;

@@ -8,7 +8,7 @@ import Game from './pages/game/page';
 import Score from './pages/score/page';
 import Signup from './pages/signup/page';
 import TournamentCreate from './pages/tournamentCreate/page';
-import TournamentList from './pages/tournamentList/page';
+import TournamentList from './pages/tournamentListing/page';
 import GameType from './pages/gametype/page';
 
 // Socket
