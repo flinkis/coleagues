@@ -246,5 +246,6 @@ module.exports = {
         "react/jsx-indent": [1, 4],
         "react/jsx-curly-spacing": [1, "always"],
         "react/forbid-prop-types": 0,
+        "react/prefer-stateless-function": 0,
     }
 };

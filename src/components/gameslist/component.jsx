@@ -8,17 +8,14 @@ import styles from './style.css';
 const GamesList = (props) => {
     const { onGameRemoved, games } = props;
     const listItems = games.map((game) => {
-        const { players, score, uid, winner } = game;
-        const formatedPlayerList = _.chain(players)
-            .map((p, i) => (winner[i] ? `_${p}_` : p))
-            .join(' vs. ')
-            .value();
+        const { participants, uid } = game;
+        const players = _.chain(participants).map(item => `${item.name} (${item.score || 0})`).join(' vs. ').value();
+
         return (
             <li key={ uid }>
-                { formatedPlayerList } { score.join('-') }
-                <Link to={ `score/${uid}` }>Report score</Link>
+                <Link to={ `score/${uid}` }>{ players }</Link>
                 <Link to={ `game/${uid}` }>Edit</Link>
-                <button type="button" onClick={ onGameRemoved(uid) }>-</button>
+                <span role="button" tabIndex="0" onClick={ onGameRemoved(uid) }>Remove</span>
             </li>
         );
     });

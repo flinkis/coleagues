@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import { Link, browserHistory } from 'react-router';
 
 import ScoreForm from '../../components/forms/score/component';
+import Hej from '../../components/hej';
 
 class ScorePage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            game: {
-                players: [],
-                score: [],
-            },
+            game: {},
+            gametypes: [],
+            scoring: [],
         };
 
         this.hanleScoreChange = this.hanleScoreChange.bind(this);
@@ -28,6 +28,18 @@ class ScorePage extends React.Component {
         });
 
         socket.on('game:update', this.updateGames);
+
+        socket.emit('gametype:request', (response) => {
+            const { gametypes } = response;
+
+            this.setState({ gametypes });
+        });
+
+        socket.emit('gametype:scoring', (response) => {
+            const { scoring } = response;
+
+            this.setState({ scoring });
+        });
     }
 
     updateGames(response) {
@@ -43,14 +55,15 @@ class ScorePage extends React.Component {
 
 /******************
  *
- * Handelers
+ * Handlers
  *
  *****************/
 
-    hanleScoreChange(game) {
+    hanleScoreChange(participants) {
         const { socket } = this.props.route;
+        const { game } = this.state;
 
-        socket.emit('game:update', { game }, (result) => {
+        socket.emit('game:update', { ...game, participants }, (result) => {
             if (!result) {
                 return alert('There was an error reporting score');
             }
@@ -65,17 +78,21 @@ class ScorePage extends React.Component {
                 <h1>Report score</h1>
                 <p>Report your score and get your standing.</p>
                 <Link to="/">Go back</Link>
+                <ScoreForm onScoreChange={ this.hanleScoreChange } game={ game } />
+                <Hej name="anders" name2="Daniel" />
 
-                <ScoreForm { ...game } onScoreChange={ this.hanleScoreChange } />
             </div>
         );
     }
-
 }
 
 ScorePage.propTypes = {
     route: PropTypes.object.isRequired,
-    params: PropTypes.object.isRequired,
+    params: PropTypes.object,
+};
+
+ScorePage.defaultProps = {
+    params: {},
 };
 
 export default ScorePage;

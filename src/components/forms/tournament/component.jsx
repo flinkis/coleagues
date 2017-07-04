@@ -15,7 +15,7 @@ class CreateTournamnentForm extends React.Component {
                 participants: [],
                 game_type: '',
             },
-            participant: '',
+            participant: {},
             error: '',
         };
 
@@ -49,7 +49,7 @@ class CreateTournamnentForm extends React.Component {
 
 /******************
  *
- * Handelers
+ * Handlers
  *
  *****************/
 
@@ -101,7 +101,7 @@ class CreateTournamnentForm extends React.Component {
     addParticipants() {
         const { tournament, participant } = this.state;
 
-        if (!_.isEmpty(participant)) {
+        if (!_.isEmpty(participant.uid)) {
             tournament.participants.push(participant);
             const newDefault = this.getDefaultParticipant(tournament);
 
@@ -165,7 +165,7 @@ class CreateTournamnentForm extends React.Component {
 
                 <h3>Participants</h3>
                 <ul>
-                    { _.isEmpty(tournament.participants) ? 'Select some users to participate in your tournamnent.' : participants }
+                    { _.isEmpty(tournament.participants) ? 'Select some users to participate in your tournament.' : participants }
                 </ul>
 
                 <select value={ participant.uid } name="participants" onChange={ this.handleParticipantsChange }>

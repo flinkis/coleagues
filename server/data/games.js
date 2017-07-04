@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const helper = require('../helper');
+const Helper = require('../helpers/general');
 
 /******************
  *
@@ -18,16 +18,14 @@ module.exports = {
         return _.find(this.games, { uid });
     },
 
-    update(data) {
-        const { game } = data;
-
+    update(game) {
         if (!_.isUndefined(game.uid) && _.some(this.games, { uid: game.uid })) {
             const oldGame = this.getById(game.uid );
             const index = this.games.indexOf(oldGame);
 
             this.games.splice(index, 1, game);
         } else {
-            game.uid = helper.getUniqueId(this.games);
+            game.uid = Helper.getUniqueId(this.games);
             this.games.push(game);
         }
     },

@@ -1,5 +1,7 @@
 const _ = require('lodash');
-const helper = require('../helper');
+const Helper = require('../helpers/general');
+const Games = require('./games');
+const { robin } = require('../helpers/seeding');
 
 /******************
  *
@@ -25,8 +27,20 @@ module.exports = {
 
             this.tournaments.splice(index, 1, tournament);
         } else {
-            tournament.uid = helper.getUniqueId(this.tournaments);
+            const { participants, gametype } = tournament;
+            tournament.uid = Helper.getUniqueId(this.tournaments);
             this.tournaments.push(tournament);
+
+            _.each(robin(participants), (rounds, index) => {
+                _.each(rounds, (participants) => {
+                    Games.update({
+                        participants, 
+                        gametype, 
+                        tournament: tournament.uid, 
+                        round: index,
+                    });
+                });
+            });
         }
     },
 

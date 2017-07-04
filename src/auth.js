@@ -7,7 +7,7 @@ const Auth = {
     login(data, user, socket, callback) {
         socket.emit('user:trylogin', data, (result) => {
             if (!result) {
-                return alert('There was an error loging in');
+                return alert('There was an error at login');
             }
 
             const { loggedInUser } = result;

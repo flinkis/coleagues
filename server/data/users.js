@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const helper = require('../helper');
+const Helper = require('../helpers/general');
 
 /******************
  *
@@ -27,7 +27,7 @@ module.exports = {
         const { name, password } = data;
         const user = _.find(this.usersFromDB, { name });
 
-        return user && user.password === helper.hashEncode(password) ? user.uid : false;
+        return user && user.password === Helper.hashEncode(password) ? user.uid : false;
     },
 
     isUserLogedin(data) {
@@ -45,7 +45,7 @@ module.exports = {
     },
 
     getGuestUser() {
-        const uid = helper.getUniqueId(this.usersFromDB);
+        const uid = Helper.getUniqueId(this.usersFromDB);
         let name,
             nextUserId = 1;
 
@@ -70,8 +70,8 @@ module.exports = {
 
     signup(user, newUser, callback) {
         const { password } = newUser;
-        newUser.password = helper.hashEncode(password);
-        newUser.uid = helper.getUniqueId(this.userinDB);
+        newUser.password = Helper.hashEncode(password);
+        newUser.uid = Helper.getUniqueId(this.userinDB);
 
         this.usersFromDB.push(newUser);
         this.update(user, newUser);

@@ -81,7 +81,7 @@ class TournamnetPage extends React.Component {
 
 /******************
  *
- * Handelers
+ * Handlers
  *
  *****************/
 
@@ -149,7 +149,9 @@ class TournamnetPage extends React.Component {
                 <Link to="/">Go Home</Link>
                 <CreateTournamnentForm onTournamentChange={ this.handleTournamentChange } selectedTournament={ tournament } gameTypes={ gametypes } users={ users } />
                 <h3>Tournaments</h3>
-                <ul className={ styles.liststyle }>{ listItems }</ul>
+                <ul className={ styles.liststyle }>
+                    { listItems }
+                </ul>
             </div>
         );
     }

@@ -13,7 +13,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * Emit Init and send all data to clinent
+ * Emit Init and send all data to client
  *
  *****************/
 
@@ -37,7 +37,7 @@ module.exports = (socket) => {
         };
 
         if(typeof token !== "string") {
-            return unauthorized({ type: 'invalid_token', description: 'invalid token datatype' });
+            return unauthorized({ type: 'invalid_token', description: 'invalid token data type' });
         }
 
         jwt.decode(secret, token, (err, decodedPayload) => {
@@ -165,6 +165,12 @@ module.exports = (socket) => {
         }
     });
 
+    socket.on('game:request', (callback) => {
+        const games = Games.getAll();
+
+        testAndDoCallback(callback, { games }, 'game:request');
+    });
+
     socket.on('game:update', (data, callback) => {
         Games.update(data)
         socket.broadcast.emit('game:update', data);
@@ -215,6 +221,12 @@ module.exports = (socket) => {
         }
     });
 
+    socket.on('gametype:scoring', (callback) => {
+        const scoring = GameTypes.getScoring();
+
+        testAndDoCallback(callback, { scoring }, 'gametype:request');
+    });
+
 /******************
  *
  * Tournament
@@ -260,7 +272,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * Hellper
+ * Helper
  *
  *****************/
 

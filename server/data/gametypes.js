@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const helper = require('../helper');
+const Helper = require('../helpers/general');
 
 /******************
  *
@@ -9,6 +9,19 @@ const helper = require('../helper');
 
 module.exports = {
     gameTypes: [],
+    scoring: [{
+        name: 'Highest Score Wins',
+        uid: '0',
+        formula: '>'
+    },{
+        name: 'Lowest Score Wins',
+        uid: '1',
+        formula: '<'
+    },{
+        name: 'No points awarded',
+        uid: '2',
+        formula: ''
+    }],
 
     getAll() {
         return this.gameTypes;
@@ -25,12 +38,16 @@ module.exports = {
 
             this.gameTypes.splice(index, 1, gameType);
         } else {
-            gameType.uid = helper.getUniqueId(this.gameTypes);
+            gameType.uid = Helper.getUniqueId(this.gameTypes);
             this.gameTypes.push(gameType);
         }
     },
 
     remove(uid) {
         this.gameTypes = _.reject(this.gameTypes, { uid });
+    },
+
+    getScoring() {
+        return this.scoring;
     }
 }

@@ -14,6 +14,7 @@ class GameTypePage extends React.Component {
         this.state = {
             gametypes: [],
             gametype: {},
+            scoring: [],
         };
 
         this.handleGameTypeChange = this.handleGameTypeChange.bind(this);
@@ -40,6 +41,12 @@ class GameTypePage extends React.Component {
             const { gametypes } = response;
 
             this.setState({ gametypes });
+        });
+
+        socket.emit('gametype:scoring', (response) => {
+            const { scoring } = response;
+
+            this.setState({ scoring });
         });
     }
 
@@ -108,13 +115,13 @@ class GameTypePage extends React.Component {
     }
 
     render() {
-        const { gametypes, gametype } = this.state;
+        const { gametypes, gametype, scoring } = this.state;
         const listItems = gametypes.map((current) => {
             const { name, description, type, uid } = current;
-            const typeText = ['High Score Wins', 'Lowest Score Wins'];
+            const score = _.find(scoring, { uid: type });
             return (
                 <li key={ uid }>
-                    { name } { description } { typeText[type] }
+                    { name } { description } { score && score.name }
                     <button type="button" onClick={ this.handleGameTypeEdit(uid) }>edit</button>
                     <button type="button" onClick={ this.handleGameTypeRemove(uid) }>-</button>
                 </li>
@@ -125,7 +132,7 @@ class GameTypePage extends React.Component {
             <div>
                 <h1>Create Game Type</h1>
                 <Link to="/">Go Home</Link>
-                <GameTypeForm onGameTypeChange={ this.handleGameTypeChange } gametype={ gametype } />
+                <GameTypeForm onGameTypeChange={ this.handleGameTypeChange } gametype={ gametype } scoring={ scoring } />
                 <h3> Games Type </h3>
                 <ul className={ styles.liststyle }>{ listItems }</ul>
             </div>

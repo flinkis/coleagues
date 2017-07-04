@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, browserHistory } from 'react-router';
 
-import CreateMatchForm from '../../components/forms/game/component';
+import GameForm from '../../components/forms/game/component';
 
 class GamePage extends React.Component {
     constructor(props) {
@@ -10,6 +10,7 @@ class GamePage extends React.Component {
         this.state = {
             game: {},
             gametypes: [],
+            users: [],
         };
 
         this.handleGameCreated = this.handleGameCreated.bind(this);
@@ -36,18 +37,24 @@ class GamePage extends React.Component {
 
             this.setState({ gametypes });
         });
+
+        socket.emit('user:request', (response) => {
+            const { users } = response;
+
+            this.setState({ users });
+        });
     }
 
 /******************
  *
- * Handelers
+ * Handlers
  *
  *****************/
 
     handleGameCreated(game) {
         const { socket } = this.props.route;
 
-        socket.emit('game:update', { game }, (result) => {
+        socket.emit('game:update', game, (result) => {
             if (!result) {
                 return alert('There was an error creating the game');
             }
@@ -67,14 +74,14 @@ class GamePage extends React.Component {
  *****************/
 
     render() {
-        const { game, gametypes } = this.state;
+        const { game, gametypes, users } = this.state;
 
         return (
             <div>
                 <h1>Create Game</h1>
                 <p>Create a game and get started!</p>
                 <Link to="/">Go Home</Link>
-                <CreateMatchForm onGameCreated={ this.handleGameCreated } game={ game } gametypes={ gametypes } />
+                <GameForm onGameCreated={ this.handleGameCreated } game={ game } gametypes={ gametypes } users={ users } />
             </div>
         );
     }

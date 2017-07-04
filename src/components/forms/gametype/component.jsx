@@ -7,10 +7,14 @@ class GameTypeForm extends React.Component {
         super(props);
 
         this.state = {
-            name: '',
-            description: '',
-            type: 0,
-            uid: '',
+            gametype: {
+                uid: '',
+                name: '',
+                description: '',
+                type: '0',
+                cooperative: false,
+                teams: false,
+            },
             error: '',
         };
 
@@ -22,53 +26,66 @@ class GameTypeForm extends React.Component {
         const { gametype } = nextProps;
 
         if (!_.isEmpty(gametype)) {
-            const { name, description, type, uid } = gametype;
-
-            this.setState({ name, description, type, uid });
+            this.setState({ gametype });
         }
     }
 
     onFormSubmit(event) {
-        const { name, type, description, uid } = this.state;
+        const { gametype } = this.state;
         const { onGameTypeChange } = this.props;
         event.preventDefault();
 
-        onGameTypeChange({ name, type, description, uid });
+        onGameTypeChange(gametype);
+
         this.setState({
-            name: '',
-            description: '',
-            type: 0,
-            uid: '',
+            gametype: {
+                uid: '',
+                name: '',
+                description: '',
+                type: '0',
+                cooperative: false,
+                teams: false,
+            },
             error: '',
         });
     }
 
     handleChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
+        const { gametype } = this.state;
+        const { type, checked, value, name } = event.target;
+        gametype[name] = type === 'checkbox' ? checked : value;
 
-        this.setState({ [name]: value, error: '' });
+        this.setState({
+            gametype,
+            error: '',
+        });
     }
 
     render() {
-        const { name, type, description, error } = this.state;
+        const { gametype, error } = this.state;
+        const { scoring } = this.props;
+        const scoreOptions = scoring.map(score => <option value={ score.uid }>{ score.name }</option>);
 
         return (
             <form onSubmit={ this.onFormSubmit }>
                 {error && <p>{error}</p>}
 
                 <label htmlFor="name">Game type name:</label>
-                <input type="text" value={ name } placeholder="The game or sport being played" name="name" onChange={ this.handleChange } />
+                <input type="text" value={ gametype.name } placeholder="The game or sport being played" name="name" onChange={ this.handleChange } />
 
                 <label htmlFor="description">Game type description:</label>
-                <textarea value={ description } name="description" onChange={ this.handleChange } />
+                <textarea value={ gametype.description } name="description" onChange={ this.handleChange } />
 
                 <label htmlFor="type">Type of game:</label>
-                <select value={ type } name="type" onChange={ this.handleChange }>
-                    <option value={ 0 }>High Score Wins</option>
-                    <option value={ 1 }>Lowest Score Wins</option>
+                <select value={ gametype.type } name="type" onChange={ this.handleChange }>
+                    { scoreOptions }
                 </select>
+
+                <label htmlFor="cooperative">Cooperative:</label>
+                <input type="checkbox" checked={ gametype.cooperative } name="cooperative" onChange={ this.handleChange } />
+
+                <label htmlFor="team">Play in teams:</label>
+                <input type="checkbox" checked={ gametype.teams } name="teams" onChange={ this.handleChange } />
 
                 <button type="submit">Submit</button>
             </form>
@@ -79,10 +96,12 @@ class GameTypeForm extends React.Component {
 GameTypeForm.propTypes = {
     onGameTypeChange: PropTypes.func.isRequired,
     gametype: PropTypes.object,
+    scoring: PropTypes.array,
 };
 
 GameTypeForm.defaultProps = {
     gametype: {},
+    scoring: [],
 };
 
 export default GameTypeForm;

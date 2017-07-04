@@ -15,7 +15,7 @@ class SignupPage extends Component {
 
 /******************
  *
- * Handelers
+ * Handlers
  *
  *****************/
 

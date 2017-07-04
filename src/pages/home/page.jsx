@@ -103,9 +103,8 @@ class HomePage extends React.Component {
         this.setState({ games: newGames });
     }
 
-    updateGames(response) {
+    updateGames(game) {
         const { games } = this.state;
-        const { game } = response;
         const oldGame = _.find(games, { uid: game.uid });
 
         if (oldGame) {
@@ -119,7 +118,7 @@ class HomePage extends React.Component {
 
 /******************
  *
- * Handelers
+ * Handlers
  *
  *****************/
 
@@ -190,7 +189,7 @@ class HomePage extends React.Component {
                     <button onClick={ this.handleLogout }>Log out</button>
                 }
 
-                <br />{ loggedIn && <Link to="/game">Create game</Link> }
+                <br /><Link to="/game">Create game</Link>
                 <br /><Link to="/gametype">Create game type</Link>
                 <br /><Link to="/tournament">Create tournament</Link>
 

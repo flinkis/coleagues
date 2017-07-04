@@ -7,54 +7,46 @@ class ScoreForm extends React.Component {
         super(props);
 
         this.state = {
-            score: [],
-            winner: [],
+            participants: [],
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
-        const { score, winner } = nextProps;
-        this.setState({ score, winner });
+        const { game } = nextProps;
+
+        if (!_.isEmpty(game)) {
+            this.setState({ participants: game.participants });
+        }
     }
 
     onFormSubmit(event) {
-        const { score, winner } = this.state;
-        const { onScoreChange, players, type, uid } = this.props;
+        const { participants } = this.state;
+        const { onScoreChange } = this.props;
         event.preventDefault();
 
-        onScoreChange({ players, type, uid, score, winner });
+        onScoreChange(participants);
     }
 
-    onWinnerChange(index) {
-        return () => {
-            const { winner } = this.state;
-
-            _.fill(winner, '');
-            winner[index] = true;
-            this.setState({ winner });
-        };
-    }
-
-    onScoreChange(index) {
+    handleChange(index) {
         return (event) => {
-            const { score } = this.state;
+            const { participants } = this.state;
+            const { type, checked, value, name } = event.target;
 
-            score.splice(index, 1, event.target.value);
-            this.setState({ score });
+            participants[index] = { ...participants[index], [name]: (type === 'checkbox' ? checked : value) };
+            this.setState({ participants });
         };
     }
 
     render() {
-        const { players } = this.props;
-        const { score, winner } = this.state;
-        const inputs = players.map((name, index) => (
-            <div key={ name }>
-                <label htmlFor={ `score-${index}` }>Score for { name }:</label>
-                <input type="number" id={ `score-${index}` } value={ score[index] } onChange={ this.onScoreChange(index) } />
-                <label htmlFor={ `winner-${index}` }>winner</label>
-                <input type="checkbox" id={ `winner-${index}` } checked={ winner[index] } onChange={ this.onWinnerChange(index) } />
+        const { participants } = this.state;
+
+        const inputs = participants.map((player, index) => (
+            <div key={ player.uid }>
+                <label htmlFor={ `score-${index}` }>Score for { player.name }:</label>
+                <input type="number" id={ `score-${index}` } value={ player.score } name="score" onChange={ this.handleChange(index) } />
             </div>
         ));
 
@@ -62,7 +54,7 @@ class ScoreForm extends React.Component {
             <div>
                 <form onSubmit={ this.onFormSubmit }>
                     { inputs }
-                    <button type="submit">Submit</button>
+                    <button type="submit">Report Score</button>
                 </form>
             </div>
         );
@@ -70,11 +62,7 @@ class ScoreForm extends React.Component {
 }
 
 ScoreForm.propTypes = {
-    players: PropTypes.array.isRequired,
-    score: PropTypes.array.isRequired,
-    winner: PropTypes.array.isRequired,
-    type: PropTypes.string.isRequired,
-    uid: PropTypes.string.isRequired,
+    game: PropTypes.object.isRequired,
     onScoreChange: PropTypes.func.isRequired,
 };
 
