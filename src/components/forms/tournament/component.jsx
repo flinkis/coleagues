@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
+import Validate from '../../validate';
+import general_style from '../../../style/general.css';
+
 class CreateTournamnentForm extends React.Component {
     constructor(props) {
         super(props);
@@ -17,7 +20,7 @@ class CreateTournamnentForm extends React.Component {
                 game_type: '',
             },
             participant: {},
-            error: '',
+            error: [],
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -60,8 +63,18 @@ class CreateTournamnentForm extends React.Component {
         const { onTournamentChange } = this.props;
         event.preventDefault();
 
-        onTournamentChange(tournament);
-        this.clearForm();
+        const validate = new Validate();
+        validate
+            .isset(tournament.name, 'Name is requierd!')
+            .length(tournament.participants, 'You have to have at least one participant!')
+            .validate((error) => {
+                if (error) {
+                    this.setState({ error });
+                } else {
+                    onTournamentChange(tournament);
+                    this.clearForm();
+                }
+            });
     }
 
     getDefaultParticipant(tournament) {
@@ -85,6 +98,7 @@ class CreateTournamnentForm extends React.Component {
                 participants: [],
                 game_type: '',
             },
+            error: [],
         });
     }
 
@@ -151,10 +165,14 @@ class CreateTournamnentForm extends React.Component {
                 { user.name } <button type="button" onClick={ this.removeParticipants(index) }>-</button>
             </li>
         ));
+        const errorMsgs = error ? error.map((errorMsg, index) => {
+            const key = `error${index}`;
+            return <p key={ key } className={ general_style.errorMsg }>{ errorMsg }</p>;
+        }) : null;
 
         return (
             <form onSubmit={ this.onFormSubmit }>
-                { error && <p>{error}</p> }
+                { errorMsgs }
 
                 <label htmlFor="name">Tournament name:</label>
                 <input id="name" type="text" name="name" value={ tournament.name } onChange={ this.handleValueChange } />

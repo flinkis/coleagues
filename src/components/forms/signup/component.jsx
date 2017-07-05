@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import Validate from '../../validate';
+import general_style from '../../../style/general.css';
 import styles from './style.css';
 
 class UserSignup extends React.Component {
@@ -13,6 +16,7 @@ class UserSignup extends React.Component {
                 size: 0,
                 password: '',
             },
+            error: [],
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -21,23 +25,40 @@ class UserSignup extends React.Component {
 
     onFormSubmit(event) {
         const { newUser } = this.state;
+        const { onSignup } = this.props;
         event.preventDefault();
 
-        this.props.onSignup(newUser);
+        const validate = new Validate();
+        validate
+            .isset(newUser.name, 'Name is requierd!')
+            .isset(newUser.password, 'Password is requierd!')
+            .validate((error) => {
+                if (error) {
+                    this.setState({ error });
+                } else {
+                    onSignup(newUser);
+                }
+            });
     }
 
     inputChange(label) {
         return (event) => {
             const { newUser } = this.state;
             newUser[label] = event.target.value;
-            this.setState({ newUser });
+            this.setState({ newUser, error: [] });
         };
     }
 
     render() {
-        const { newUser } = this.state;
+        const { newUser, error } = this.state;
+        const errorMsgs = error ? error.map((errorMsg, index) => {
+            const key = `error${index}`;
+            return <p key={ key } className={ general_style.errorMsg }>{ errorMsg }</p>;
+        }) : null;
+
         return (
             <div>
+                { errorMsgs }
                 <form onSubmit={ this.onFormSubmit }>
                     <label htmlFor="name">User Name:</label>
                     <input type="text" id="name" placeholder="User name" value={ newUser.name } onChange={ this.inputChange('name') } />

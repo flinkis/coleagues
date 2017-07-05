@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
+import Validate from '../../validate';
+import general_style from '../../../style/general.css';
+
 class GameTypeForm extends React.Component {
     constructor(props) {
         super(props);
@@ -15,11 +18,12 @@ class GameTypeForm extends React.Component {
                 cooperative: false,
                 teams: false,
             },
-            error: '',
+            error: [],
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.clearForm = this.clearForm.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -33,10 +37,23 @@ class GameTypeForm extends React.Component {
     onFormSubmit(event) {
         const { gametype } = this.state;
         const { onGameTypeChange } = this.props;
+
         event.preventDefault();
 
-        onGameTypeChange(gametype);
+        const validate = new Validate();
+        validate
+            .isset(gametype.name, 'The game type needs to hava a name')
+            .validate((error) => {
+                if (error) {
+                    this.setState({ error });
+                } else {
+                    onGameTypeChange(gametype);
+                    this.clearForm();
+                }
+            });
+    }
 
+    clearForm() {
         this.setState({
             gametype: {
                 uid: '',
@@ -57,7 +74,7 @@ class GameTypeForm extends React.Component {
 
         this.setState({
             gametype,
-            error: '',
+            error: [],
         });
     }
 
@@ -65,10 +82,14 @@ class GameTypeForm extends React.Component {
         const { gametype, error } = this.state;
         const { scoring } = this.props;
         const scoreOptions = scoring.map(score => <option value={ score.uid }>{ score.name }</option>);
+        const errorMsgs = error ? error.map((errorMsg, index) => {
+            const key = `error${index}`;
+            return <p key={ key } className={ general_style.errorMsg }>{ errorMsg }</p>;
+        }) : null;
 
         return (
             <form onSubmit={ this.onFormSubmit }>
-                {error && <p>{error}</p>}
+                { errorMsgs }
 
                 <label htmlFor="name">Game type name:</label>
                 <input type="text" value={ gametype.name } placeholder="The game or sport being played" name="name" onChange={ this.handleChange } />

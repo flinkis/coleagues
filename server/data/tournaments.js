@@ -37,7 +37,7 @@ module.exports = {
         this.tournaments = _.reject(this.tournaments, { uid });
     },
 
-    getParing(type, tournament) {
+    getParings(type, tournament) {
         const { participants } = tournament;
 
         switch(type) {

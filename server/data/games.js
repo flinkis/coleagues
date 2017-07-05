@@ -38,8 +38,7 @@ module.exports = {
         _.each(pairing, (rounds, index) => {
             _.each(rounds, (participants) => {
                 let game = _.assign({
-                    participants, 
-                    gametype, 
+                    participants,
                     round: index,
                 }, extention);
                 this.update(game);

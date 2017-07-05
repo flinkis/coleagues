@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { browserHistory } from 'react-router';
 
+import Validate from '../../validate';
+import general_style from '../../../style/general.css';
 import styles from './style.css';
 
 class UserLogin extends React.Component {
@@ -13,6 +15,7 @@ class UserLogin extends React.Component {
                 name: '',
                 password: '',
             },
+            error: [],
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -21,25 +24,42 @@ class UserLogin extends React.Component {
 
     onFormSubmit(event) {
         const { user } = this.state;
+        const { onLogin } = this.props;
+
         event.preventDefault();
 
-        this.props.onLogin(user);
+        const validate = new Validate();
+        validate
+            .isset(user.name, 'Name is missing!')
+            .isset(user.password, 'Password is missing!')
+            .validate((error) => {
+                if (error) {
+                    this.setState({ error });
+                } else {
+                    onLogin(user);
+                }
+            });
     }
 
     inputChange(label) {
         return (event) => {
             const { user } = this.state;
             user[label] = event.target.value;
-            this.setState({ user });
+            this.setState({ user, error: [] });
         };
     }
 
     render() {
-        const { user } = this.state;
+        const { user, error } = this.state;
         const gotoSigniup = () => browserHistory.push('/user');
+        const errorMsgs = error ? error.map((errorMsg, index) => {
+            const key = `error${index}`;
+            return <p key={ key } className={ general_style.errorMsg }>{ errorMsg }</p>;
+        }) : null;
 
         return (
             <div>
+                { errorMsgs }
                 <form onSubmit={ this.onFormSubmit }>
                     <label htmlFor="name">User Name:</label>
                     <input type="text" id="name" placeholder="User name" value={ user.name } onChange={ this.inputChange('name') } />

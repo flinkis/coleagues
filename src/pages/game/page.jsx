@@ -54,13 +54,7 @@ class GamePage extends React.Component {
     handleGameCreated(game) {
         const { socket } = this.props.route;
 
-        socket.emit('game:update', game, (result) => {
-            if (!result) {
-                return alert('There was an error creating the game');
-            }
-
-            browserHistory.push('/');
-        });
+        socket.emit('game:update', game, browserHistory.goBack);
     }
 
     updateGames(game) {

@@ -275,15 +275,14 @@ module.exports = (socket) => {
 
     socket.on('tournament:start', (data, callback) => {
         const { tournament, type } = data;
-
+    
         if (!!tournament && !!type) {
             const paring = Tournaments.getParings(type, tournament);
 
-            Games.bulkUpdate(paring, { tournament: tournament.uid }, (games) => {
+            Games.bulkUpdate(paring, { tournament: tournament.uid, gametype: tournament.game_type }, (games) => {
                 if(games) {
-                    Tournaments.update(data);
-                    socket.broadcast.emit('tournament:update', data);
-
+                    Tournaments.update(tournament);
+                    socket.broadcast.emit('tournament:update', tournament);
                     Helper.testAndDoCallback(callback, { games }, 'tournament:getById');
                 }
             });

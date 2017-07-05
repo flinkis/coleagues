@@ -40,7 +40,7 @@ module.exports = {
             callback(payload);
         } else {
             socket.emit('message', { type: 'missing_callback', description: 'callback missing from [' + caller + ']' });
-            return;
+            callback(false);
         }
     }
 }

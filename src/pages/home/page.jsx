@@ -217,9 +217,9 @@ class HomePage extends React.Component {
                     <button onClick={ this.handleLogout }>Log out</button>
                 }
 
-                <br /><Link to="/game">Create/Edit Duel</Link>
-                <br /><Link to="/gametype">Create/Edit Game-type</Link>
-                <br /><Link to="/tournament">Create/Edit Tournament</Link>
+                <br /><Link to="/game">Create a New Duel</Link>
+                <br /><Link to="/gametype">Create/Edit Game-types</Link>
+                <br /><Link to="/tournament">Create/Edit Tournaments</Link>
 
                 <TournamentsList tournaments={ tournaments } />
                 <GamesList games={ games } onGameRemoved={ this.handleGameRemoved } edit />

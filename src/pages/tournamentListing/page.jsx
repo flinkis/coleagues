@@ -9,17 +9,21 @@ import ParticipantList from '../../components/list/participants/component';
 import GamesList from '../../components/list/games/component';
 
 class TournamnetList extends React.Component {
+
     constructor(props) {
         super(props);
 
         this.state = {
             tournament: {},
             authenticatedUser: {},
-            games: [],
+            filterdGames: [],
         };
 
-        this.signup = this.signup.bind(this);
-        this.startTournament = this.startTournament.bind(this);
+        this.handleSignup = this.handleSignup.bind(this);
+        this.handleTournamentStart = this.handleTournamentStart.bind(this);
+        this.updateTournament = this.updateTournament.bind(this);
+        this.updateGame = this.updateGame.bind(this);
+        this.removeGame = this.removeGame.bind(this);
     }
 
     componentWillMount() {
@@ -28,21 +32,18 @@ class TournamnetList extends React.Component {
 
         socket.emit('tournament:getById', { uid }, (result) => {
             const { tournament } = result;
-            if (tournament) {
-                socket.emit('game:request', (games) => {
-                    this.setState({
-                        games: _.filter(games, { tournament: tournament.uid }),
-                        tournament,
-                    });
-                });
-            }
+
+            socket.emit('game:request', (subResult) => {
+                const { games } = subResult;
+                const filterdGames = _.filter(games, { tournament: tournament.uid });
+
+                this.setState({ filterdGames, tournament });
+            });
         });
 
-        socket.on('tournament:update', (tournament) => {
-            if (tournament.uid === uid) {
-                this.setState({ tournament });
-            }
-        });
+        socket.on('tournament:update', this.updateTournament);
+        socket.on('game:update', this.updateGame);
+        socket.on('game:remove', this.removeGame);
 
         Auth.handleAuthentication(socket, (authenticatedUser) => {
             if (authenticatedUser) {
@@ -51,7 +52,34 @@ class TournamnetList extends React.Component {
         });
     }
 
-    signup() {
+    updateTournament(tournament) {
+        const { uid } = this.props.params;
+
+        if (tournament.uid === uid) {
+            this.setState({ tournament });
+        }
+    }
+
+    updateGame(game) {
+        const { filterdGames } = this.state;
+        const oldGame = _.find(filterdGames, { uid: game.uid });
+
+        if (oldGame) {
+            filterdGames.splice(filterdGames.indexOf(oldGame), 1, game);
+            this.setState({ filterdGames });
+        }
+    }
+
+    removeGame(response) {
+        const { filterdGames } = this.state;
+        const { uid } = response;
+
+        this.setState({
+            filterdGames: _.reject(filterdGames, { uid }),
+        });
+    }
+
+    handleSignup() {
         const { tournament, authenticatedUser } = this.state;
         const { socket } = this.props.route;
 
@@ -64,25 +92,22 @@ class TournamnetList extends React.Component {
         }
     }
 
-    startTournament() {
+    handleTournamentStart() {
         const { tournament } = this.state;
         const { socket } = this.props.route;
 
         tournament.active = true;
 
-        socket.on('tournament:start', { tournament, type: 'robin' }, (respons) => {
-            if (respons) {
-                const { games } = respons;
-                this.setState({
-                    games: _.filter(games, { tournament: tournament.uid }),
-                    tournament,
-                });
-            }
+        socket.emit('tournament:start', { tournament, type: 'robin' }, (respons) => {
+            const { games } = respons;
+            const filterdGames = _.filter(games, { tournament: tournament.uid });
+
+            this.setState({ filterdGames, tournament });
         });
     }
 
     render() {
-        const { tournament, authenticatedUser, games } = this.state;
+        const { tournament, authenticatedUser, filterdGames } = this.state;
 
         return (
             <div>
@@ -92,9 +117,9 @@ class TournamnetList extends React.Component {
                 <p> Start Date: { tournament.start_date } </p>
                 <p> End Date: { tournament.end_date } </p>
 
-                { !tournament.active && <button type="button" onClick={ this.startTournament }>Lock players and start tournament</button> }
-                <ParticipantList authenticatedUser={ authenticatedUser } tournament={ tournament } signup={ this.signup } />
-                <GamesList games={ games } />
+                { !tournament.active && <button type="button" onClick={ this.handleTournamentStart }>Lock players and start tournament</button> }
+                <ParticipantList authenticatedUser={ authenticatedUser } tournament={ tournament } signup={ this.handleSignup } />
+                <GamesList games={ filterdGames } />
             </div>
         );
     }
