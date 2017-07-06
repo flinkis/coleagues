@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link, browserHistory } from 'react-router';
 
 import ScoreForm from '../../components/forms/score/component';
 
@@ -18,10 +17,10 @@ class ScorePage extends React.Component {
     }
 
     componentWillMount() {
-        const { socket } = this.props.route;
-        const { uid } = this.props.params;
+        const { socket } = this.props;
+        const { params } = this.props.match;
 
-        socket.emit('game:getById', { uid }, (result) => {
+        socket.emit('game:getById', { uid: params.uid }, (result) => {
             const { game } = result;
             this.setState({ game });
         });
@@ -43,9 +42,9 @@ class ScorePage extends React.Component {
 
     updateGames(response) {
         const { game } = this.state;
-        const { uid } = this.props.params;
+        const { params } = this.props.match;
 
-        if (uid === response.uid) {
+        if (params.uid === response.uid) {
             game.score = response.game.score;
             this.setState({ game });
         }
@@ -59,24 +58,21 @@ class ScorePage extends React.Component {
  *****************/
 
     hanleScoreChange(participants) {
-        const { socket } = this.props.route;
+        const { socket, history } = this.props;
         const { game } = this.state;
 
         socket.emit('game:update', { ...game, participants }, (result) => {
             if (!result) {
                 return alert('There was an error reporting score');
             }
-            browserHistory.push('/');
+            history.goBack();
         });
     }
 
     render() {
         const { game } = this.state;
         return (
-            <div>
-                <h1>Report score</h1>
-                <p>Report your score and get your standing.</p>
-                <Link to="/">Home</Link>
+            <div className="hg__main">
                 <ScoreForm onScoreChange={ this.hanleScoreChange } game={ game } />
             </div>
         );
@@ -84,12 +80,9 @@ class ScorePage extends React.Component {
 }
 
 ScorePage.propTypes = {
-    route: PropTypes.object.isRequired,
-    params: PropTypes.object,
-};
-
-ScorePage.defaultProps = {
-    params: {},
+    socket: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
 export default ScorePage;

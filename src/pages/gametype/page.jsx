@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
 import _ from 'lodash';
 
-import styles from './styles.css';
-
 import GameTypeForm from '../../components/forms/gametype/component';
+import GameTypeList from '../../components/list/gametype/component';
 
 class GameTypePage extends React.Component {
     constructor(props) {
@@ -32,7 +30,7 @@ class GameTypePage extends React.Component {
  *****************/
 
     componentDidMount() {
-        const { socket } = this.props.route;
+        const { socket } = this.props;
 
         socket.on('gametype:remove', this.removeGameType);
         socket.on('gametype:update', this.updateGameType);
@@ -79,7 +77,7 @@ class GameTypePage extends React.Component {
  *****************/
 
     handleGameTypeChange(gametype) {
-        const { socket } = this.props.route;
+        const { socket } = this.props;
 
         socket.emit('gametype:update', gametype, (response) => {
             const { gametypes } = response;
@@ -93,7 +91,7 @@ class GameTypePage extends React.Component {
 
     handleGameTypeEdit(uid) {
         return () => {
-            const { socket } = this.props.route;
+            const { socket } = this.props;
 
             socket.emit('gametype:getById', { uid }, (response) => {
                 const { gametype } = response;
@@ -106,7 +104,7 @@ class GameTypePage extends React.Component {
     handleGameTypeRemove(uid) {
         return () => {
             const { gametypes } = this.state;
-            const { socket } = this.props.route;
+            const { socket } = this.props;
             const newGameTypes = _.reject(gametypes, { uid });
 
             this.setState({ gametypes: newGameTypes });
@@ -116,32 +114,18 @@ class GameTypePage extends React.Component {
 
     render() {
         const { gametypes, gametype, scoring } = this.state;
-        const listItems = gametypes.map((current) => {
-            const { name, description, type, uid } = current;
-            const score = _.find(scoring, { uid: type });
-            return (
-                <li key={ uid }>
-                    { name } { description } { score && score.name }
-                    <button type="button" onClick={ this.handleGameTypeEdit(uid) }>edit</button>
-                    <button type="button" onClick={ this.handleGameTypeRemove(uid) }>-</button>
-                </li>
-            );
-        });
 
         return (
-            <div>
-                <h1>Create Game Type</h1>
-                <Link to="/">Home</Link>
+            <div className="hg__main">
                 <GameTypeForm onGameTypeChange={ this.handleGameTypeChange } gametype={ gametype } scoring={ scoring } />
-                <h3> Games Type </h3>
-                <ul className={ styles.liststyle }>{ listItems }</ul>
+                <GameTypeList gametypes={ gametypes } scoring={ scoring } onEdit={ this.handleGameTypeEdit } onRemove={ this.handleGameTypeRemove } />
             </div>
         );
     }
 }
 
 GameTypePage.propTypes = {
-    route: PropTypes.object.isRequired,
+    socket: PropTypes.object.isRequired,
 };
 
 export default GameTypePage;

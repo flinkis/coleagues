@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 import styles from './style.css';
-import general_style from '../../../style/general.css';
+import general_style from '../../../common/general.css';
 
 const GamesList = (props) => {
     const { onGameRemoved, edit, games } = props;
@@ -14,8 +14,8 @@ const GamesList = (props) => {
 
         return (
             <li className={ styles.gameslist } key={ uid }>
-                <Link to={ `score/${uid}` }>{ players }</Link>
-                { edit && <Link to={ `game/${uid}` }>Edit</Link> }
+                <Link to={ `/game/s/${uid}` }>{ players }</Link>
+                { edit && <Link to={ `/game/${uid}` }>Edit</Link> }
                 { onGameRemoved && <span role="button" tabIndex="0" onClick={ onGameRemoved(uid) }>Remove</span> }
             </li>
         );

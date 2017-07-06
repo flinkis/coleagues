@@ -1,18 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Switch, Route } from 'react-router-dom';
 
-class NumberTilte extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+import routes from '../../routes';
+import styles from './style.css';
 
-    render() {
-        return <p>Number: {this.props.number}</p>;
-    }
-}
+const Header = props => (
+    <header className={ [styles.header, 'hg__header'].join(' ') }>
+        <Switch>
+            { routes(props).map(route => (
+                <Route
+                  key={ route.id }
+                  path={ route.path }
+                  exact={ route.exact }
+                  component={ route.header }
+                />
+            )) }
+        </Switch>
+    </header>
+);
 
-NumberTilte.propTypes = {
-  number: PropTypes.number
-};
-
-export default NumberTilte;
+export default Header;

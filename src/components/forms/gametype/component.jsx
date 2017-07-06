@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import Validate from '../../validate';
-import general_style from '../../../style/general.css';
+import general_style from '../../../common/general.css';
 
 class GameTypeForm extends React.Component {
     constructor(props) {
@@ -81,7 +81,7 @@ class GameTypeForm extends React.Component {
     render() {
         const { gametype, error } = this.state;
         const { scoring } = this.props;
-        const scoreOptions = scoring.map(score => <option value={ score.uid }>{ score.name }</option>);
+        const scoreOptions = scoring.map(score => <option key={ score.uid } value={ score.uid }>{ score.name }</option>);
         const errorMsgs = error ? error.map((errorMsg, index) => {
             const key = `error${index}`;
             return <p key={ key } className={ general_style.errorMsg }>{ errorMsg }</p>;

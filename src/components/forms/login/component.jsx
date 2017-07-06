@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { browserHistory } from 'react-router';
 
 import Validate from '../../validate';
-import general_style from '../../../style/general.css';
-import styles from './style.css';
+import general_style from '../../../common/general.css';
 
-class UserLogin extends React.Component {
+class LoginForm extends React.Component {
     constructor(props) {
         super(props);
 
@@ -51,7 +49,6 @@ class UserLogin extends React.Component {
 
     render() {
         const { user, error } = this.state;
-        const gotoSigniup = () => browserHistory.push('/user');
         const errorMsgs = error ? error.map((errorMsg, index) => {
             const key = `error${index}`;
             return <p key={ key } className={ general_style.errorMsg }>{ errorMsg }</p>;
@@ -67,16 +64,13 @@ class UserLogin extends React.Component {
                     <input type="password" id="password" placeholder="Password" value={ user.password } onChange={ this.inputChange('password') } />
                     <button type="submit">Log In</button>
                 </form>
-
-                <p className={ styles.lead }>Create an account to get started!</p>
-                <button className={ styles.gotoSigniupButton } onClick={ gotoSigniup }>Sign up</button>
             </div>
         );
     }
 }
 
-UserLogin.propTypes = {
+LoginForm.propTypes = {
     onLogin: PropTypes.func.isRequired,
 };
 
-export default UserLogin;
+export default LoginForm;

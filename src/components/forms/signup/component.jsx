@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Validate from '../../validate';
-import general_style from '../../../style/general.css';
+import general_style from '../../../common/general.css';
 import styles from './style.css';
 
 class UserSignup extends React.Component {

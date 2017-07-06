@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import styles from './style.css';
-import general_style from '../../../style/general.css';
+import general_style from '../../../common/general.css';
 
 const Tournamentlist = (props) => {
     const listItems = props.tournaments.map((tournament) => {

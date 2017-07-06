@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link, browserHistory } from 'react-router';
 
 import GameForm from '../../components/forms/game/component';
 
@@ -14,23 +13,26 @@ class GamePage extends React.Component {
         };
 
         this.handleGameCreated = this.handleGameCreated.bind(this);
-        this.updateGames = this.updateGames.bind(this);
     }
 
     componentWillMount() {
-        const { socket } = this.props.route;
-        const { uid } = this.props.params;
+        const { socket } = this.props;
+        const { uid } = this.props.match.params;
 
         socket.emit('game:getById', { uid }, (result) => {
             const { game } = result;
             this.setState({ game });
         });
 
-        socket.on('game:update', this.updateGames);
+        socket.on('game:update', (game) => {
+            if (game.uid === uid) {
+                this.setState({ game });
+            }
+        });
     }
 
     componentDidMount() {
-        const { socket } = this.props.route;
+        const { socket } = this.props;
 
         socket.emit('gametype:request', (response) => {
             const { gametypes } = response;
@@ -52,13 +54,11 @@ class GamePage extends React.Component {
  *****************/
 
     handleGameCreated(game) {
-        const { socket } = this.props.route;
+        const { socket, history } = this.props;
 
-        socket.emit('game:update', game, browserHistory.goBack);
-    }
-
-    updateGames(game) {
-        this.setState({ game });
+        socket.emit('game:update', game, () => {
+            history.push('/');
+        });
     }
 
 /******************
@@ -71,10 +71,7 @@ class GamePage extends React.Component {
         const { game, gametypes, users } = this.state;
 
         return (
-            <div>
-                <h1>Create Game</h1>
-                <p>Create a game and get started!</p>
-                <Link to="/">Home</Link>
+            <div className="hg__main">
                 <GameForm onGameCreated={ this.handleGameCreated } game={ game } gametypes={ gametypes } users={ users } />
             </div>
         );
@@ -82,8 +79,9 @@ class GamePage extends React.Component {
 }
 
 GamePage.propTypes = {
-    route: PropTypes.object.isRequired,
-    params: PropTypes.object.isRequired,
+    socket: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
 export default GamePage;

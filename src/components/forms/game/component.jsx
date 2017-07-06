@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import Validate from '../../validate';
-import general_style from '../../../style/general.css';
+import general_style from '../../../common/general.css';
 
 class GameForm extends React.Component {
     constructor(props) {

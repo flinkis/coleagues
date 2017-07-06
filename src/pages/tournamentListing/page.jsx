@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
 import _ from 'lodash';
 
-import Auth from '../../auth';
+import Auth from '../../components/auth';
 
 import ParticipantList from '../../components/list/participants/component';
 import GamesList from '../../components/list/games/component';
@@ -27,10 +26,10 @@ class TournamnetList extends React.Component {
     }
 
     componentWillMount() {
-        const { socket } = this.props.route;
-        const { uid } = this.props.params;
+        const { socket } = this.props;
+        const { params } = this.props.match;
 
-        socket.emit('tournament:getById', { uid }, (result) => {
+        socket.emit('tournament:getById', { uid: params.uid }, (result) => {
             const { tournament } = result;
 
             socket.emit('game:request', (subResult) => {
@@ -53,9 +52,9 @@ class TournamnetList extends React.Component {
     }
 
     updateTournament(tournament) {
-        const { uid } = this.props.params;
+        const { params } = this.props.match;
 
-        if (tournament.uid === uid) {
+        if (tournament.uid === params.uid) {
             this.setState({ tournament });
         }
     }
@@ -81,7 +80,7 @@ class TournamnetList extends React.Component {
 
     handleSignup() {
         const { tournament, authenticatedUser } = this.state;
-        const { socket } = this.props.route;
+        const { socket } = this.props;
 
         if (!_.isEmpty(authenticatedUser.uid) && !_.some(tournament.participants, ['uid', authenticatedUser.uid])) {
             tournament.participants.push(authenticatedUser);
@@ -94,7 +93,7 @@ class TournamnetList extends React.Component {
 
     handleTournamentStart() {
         const { tournament } = this.state;
-        const { socket } = this.props.route;
+        const { socket } = this.props;
 
         tournament.active = true;
 
@@ -110,9 +109,8 @@ class TournamnetList extends React.Component {
         const { tournament, authenticatedUser, filterdGames } = this.state;
 
         return (
-            <div>
-                <h1> { tournament.name } </h1>
-                <Link to="/">Home</Link>
+            <div className="hg__main">
+                <h2> { tournament.name } </h2>
                 <p> { tournament.description } </p>
                 <p> Start Date: { tournament.start_date } </p>
                 <p> End Date: { tournament.end_date } </p>
@@ -126,8 +124,8 @@ class TournamnetList extends React.Component {
 }
 
 TournamnetList.propTypes = {
-    route: PropTypes.object.isRequired,
-    params: PropTypes.object.isRequired,
+    socket: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
 };
 
 export default TournamnetList;

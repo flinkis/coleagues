@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
 import _ from 'lodash';
 
 import styles from './styles.css';
@@ -29,7 +28,7 @@ class TournamnetPage extends React.Component {
     }
 
     componentDidMount() {
-        const { socket } = this.props.route;
+        const { socket } = this.props;
 
         socket.on('tournament:remove', this.removeTournament);
         socket.on('tournament:update', this.updateTournament);
@@ -88,7 +87,7 @@ class TournamnetPage extends React.Component {
  *****************/
 
     handleTournamentChange(tournament) {
-        const { socket } = this.props.route;
+        const { socket } = this.props;
 
         socket.emit('tournament:update', tournament, (response) => {
             const { tournaments } = response;
@@ -102,7 +101,7 @@ class TournamnetPage extends React.Component {
 
     handleTournamentEdit(uid) {
         return () => {
-            const { socket } = this.props.route;
+            const { socket } = this.props;
 
             socket.emit('tournament:getById', { uid }, (response) => {
                 const { tournament } = response;
@@ -114,7 +113,7 @@ class TournamnetPage extends React.Component {
 
     handleTournamentDuplicate(uid) {
         return () => {
-            const { socket } = this.props.route;
+            const { socket } = this.props;
 
             socket.emit('tournament:getById', { uid }, (response) => {
                 const { tournament } = response;
@@ -129,7 +128,7 @@ class TournamnetPage extends React.Component {
     handleTournamentRemove(uid) {
         return () => {
             const { tournaments } = this.state;
-            const { socket } = this.props.route;
+            const { socket } = this.props;
             const newTournamentList = _.reject(tournaments, { uid });
 
             this.setState({ tournaments: newTournamentList });
@@ -161,10 +160,7 @@ class TournamnetPage extends React.Component {
         });
 
         return (
-            <div>
-                <h1>Create Tournament</h1>
-                <Link to="/">Home</Link>
-
+            <div className="hg__main">
                 <CreateTournamnentForm
                   onTournamentChange={ this.handleTournamentChange }
                   selectedTournament={ tournament }
@@ -183,7 +179,7 @@ class TournamnetPage extends React.Component {
 }
 
 TournamnetPage.propTypes = {
-    route: PropTypes.object.isRequired,
+    socket: PropTypes.object.isRequired,
 };
 
 export default TournamnetPage;
