@@ -30,8 +30,8 @@ class UserSignup extends React.Component {
 
         const validate = new Validate();
         validate
-            .isset(newUser.name, 'Name is requierd!')
-            .isset(newUser.password, 'Password is requierd!')
+            .isset(newUser.name, 'Name is required!')
+            .isset(newUser.password, 'Password is required!')
             .validate((error) => {
                 if (error) {
                     this.setState({ error });

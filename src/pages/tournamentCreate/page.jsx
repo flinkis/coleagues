@@ -176,10 +176,12 @@ class TournamnetPage extends React.Component {
                   users={ users }
                 />
 
-                <h3>Tournaments</h3>
-                <ul className={ styles.liststyle }>
-                    { listItems }
-                </ul>
+                <div className="block">
+                    <h3>Tournaments</h3>
+                    <ul className={ styles.liststyle }>
+                        { listItems }
+                    </ul>
+                </div>
             </div>
         );
     }

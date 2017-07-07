@@ -1,3 +1,7 @@
+:global(.field) {
+	margin: 0 0 15px;
+}
+
 /*  Buttons
 --------------------------------------------- */
 
@@ -6,7 +10,6 @@ button,
 	display: inline-block;
 	background-color: #70C1B3;
 	border: 1px solid #70C1B3;
-	border-radius: 4px;
 	color: white;
 	font-size: 0.75rem;
 	padding: 5px 20px;
@@ -25,15 +28,16 @@ button:hover,
 --------------------------------------------- */
 
 label {
-	display: inline-block;
+	font-size: 0.75rem;
+	display: block;
 	margin: 10px 0 5px;
 }
 
 input,
 textarea {
-	background-color: #fff;
+	background-color: #ebebeb;
 	border: 1px solid #aaa;
-	font-size: 1rem;
+	font-size: 0.75rem;
 	padding: 5px 10px;
 	max-width: 100%;
 }
