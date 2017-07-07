@@ -4,7 +4,7 @@ import styles from './style.css';
 
 const Footer = () => (
     <footer className="hg__footer">
-        <p className={ styles.text }>footer</p>
+        <p className={ styles.text }>&copy; 2017 Colleagues</p>
     </footer>
 );
 
