@@ -1,0 +1,39 @@
+/*  Buttons
+--------------------------------------------- */
+
+button,
+:global(.button) {
+	display: inline-block;
+	background-color: #70C1B3;
+	border: 1px solid #70C1B3;
+	border-radius: 4px;
+	color: white;
+	font-size: 0.75rem;
+	padding: 5px 20px;
+	outline: none;
+	margin: 5px 5px 5px 0;
+}
+
+button:hover,
+:global(.button):hover {
+	cursor: pointer;
+	opacity: 0.9;
+}
+
+
+/*  Forms
+--------------------------------------------- */
+
+label {
+	display: inline-block;
+	margin: 10px 0 5px;
+}
+
+input,
+textarea {
+	background-color: #fff;
+	border: 1px solid #aaa;
+	font-size: 1rem;
+	padding: 5px 10px;
+	max-width: 100%;
+}

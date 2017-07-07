@@ -1,3 +1,18 @@
+@import './forms.css';
+
+/*  Color scheme
+---------------------------------------------
+Tradewind: #70C1B3;
+Jelly Bean: #247BA0;
+Torch Red: #FF1654;
+
+body: #1c1c1c;
+body-accent: #212121;
+borders: #363636;
+light: #ebebeb;
+
+*/
+
 * {
     box-sizing: border-box;
 }
@@ -6,18 +21,22 @@ body {
     margin: 0;
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-weight: 300;
-    background-color: #f1f1f1;
+    background-color: #1c1c1c;
+    color: #ebebeb;
 }
 
 h1 {
     margin: 0;
-    color: #F97F85;
+    color: #FF5666;
 }
 
 a {
-    color: #0275d8;
+    color: #ebebeb;
     text-decoration: none;
 }
+
+/*  Page Layout
+--------------------------------------------- */
 
 :global(.hg__header) { grid-area: header; }
 :global(.hg__footer) { grid-area: footer; }
@@ -30,10 +49,10 @@ a {
     grid-template-areas: "header header header"
                          "navigation main ads"
                          "footer footer footer";
-    grid-template-columns: 150px 1fr 150px;
+    grid-template-columns: 170px 1fr 200px;
     grid-template-rows: 100px 
                         1fr
-                        30px;
+                        50px;
     min-height: 100vh;
 
     @media screen and (max-width: 600px) {
@@ -51,3 +70,36 @@ a {
     }
 }
 
+/*  Header
+--------------------------------------------- */
+:global(.hg__header) {
+    background-color: #212121;
+}
+
+/*  Main
+--------------------------------------------- */
+:global(.hg__main) {
+    padding: 20px 20px;
+}
+
+
+/*  Left column
+--------------------------------------------- */
+:global(.hg__left) {
+    padding: 20px 0;
+}
+
+/*  Right column
+--------------------------------------------- */
+:global(.hg__right) {
+    padding: 0 20px;
+}
+
+/*  Footer
+--------------------------------------------- */
+
+:global(.hg__footer) {
+    background-color: #212121;
+    color: #70C1B3;
+    text-align: center;
+}
