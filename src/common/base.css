@@ -83,6 +83,10 @@ a {
     background-color: #212121;
 }
 
+:global(.hg__header) h1 {
+    color: #247BA0;
+}
+
 /*  Main
 --------------------------------------------- */
 :global(.hg__main) {
