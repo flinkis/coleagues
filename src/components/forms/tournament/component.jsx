@@ -65,7 +65,7 @@ class CreateTournamnentForm extends React.Component {
 
         const validate = new Validate();
         validate
-            .isset(tournament.name, 'Name is requierd!')
+            .isset(tournament.name, 'Name is required!')
             .length(tournament.participants, 'You have to have at least one participant!')
             .validate((error) => {
                 if (error) {
@@ -171,30 +171,42 @@ class CreateTournamnentForm extends React.Component {
         }) : null;
 
         return (
-            <form onSubmit={ this.onFormSubmit }>
+            <form className="block" onSubmit={ this.onFormSubmit }>
                 { errorMsgs }
 
-                <label htmlFor="name">Tournament name:</label>
-                <input id="name" type="text" name="name" value={ tournament.name } onChange={ this.handleValueChange } />
+                <div className="field">
+                    <label htmlFor="name">Tournament name:</label>
+                    <input id="name" type="text" name="name" value={ tournament.name } onChange={ this.handleValueChange } />
+                </div>
 
-                <label htmlFor="description">Game type description:</label>
-                <textarea id="description" name="description" value={ tournament.description } onChange={ this.handleValueChange } />
+                <div className="field">
+                    <label htmlFor="description">Game type description:</label>
+                    <textarea id="description" name="description" value={ tournament.description } onChange={ this.handleValueChange } />
+                </div>
 
-                <label htmlFor="start_date">Start date:</label>
-                <input id="start_date" type="date" name="start_date" value={ tournament.start_date } onChange={ this.handleValueChange } />
+                <div className="field">
+                    <label htmlFor="start_date">Start date:</label>
+                    <input id="start_date" type="date" name="start_date" value={ tournament.start_date } onChange={ this.handleValueChange } />
+                </div>
 
-                <label htmlFor="end_date">End date:</label>
-                <input id="end_date" type="date" name="end_date" value={ tournament.end_date } onChange={ this.handleValueChange } />
+                <div className="field">
+                    <label htmlFor="end_date">End date:</label>
+                    <input id="end_date" type="date" name="end_date" value={ tournament.end_date } onChange={ this.handleValueChange } />
+                </div>
 
-                <label htmlFor="game_type">Game type:</label>
-                <select id="game_type" value={ tournament.game_type } name="game_type" onChange={ this.handleValueChange }>
-                    { game_types_options }
-                </select>
+                <div className="field">
+                    <label htmlFor="game_type">Game type:</label>
+                    <select id="game_type" value={ tournament.game_type } name="game_type" onChange={ this.handleValueChange }>
+                        { game_types_options }
+                    </select>
+                </div>
 
-                <label htmlFor="tournament_type">Tournament type:</label>
-                <select value={ tournament.tournament_type } name="tournament_type" onChange={ this.handleValueChange }>
-                    { tournament_types_options }
-                </select>
+                <div className="field">
+                    <label htmlFor="tournament_type">Tournament type:</label>
+                    <select value={ tournament.tournament_type } name="tournament_type" onChange={ this.handleValueChange }>
+                        { tournament_types_options }
+                    </select>
+                </div>
 
                 <h3>Participants</h3>
                 <ul>

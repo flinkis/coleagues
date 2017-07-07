@@ -23,7 +23,7 @@ const GameTypeList = (props) => {
     });
 
     return (
-        <div>
+        <div className="block">
             <h3> Games Type </h3>
             <ul className={ styles.list }>
                 { listItems }

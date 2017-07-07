@@ -138,7 +138,7 @@ class GameForm extends React.Component {
         }) : null;
 
         return (
-            <form onSubmit={ this.onFormSubmit }>
+            <form onSubmit={ this.onFormSubmit } className="block">
                 { errorMsgs }
                 <h3>Participants</h3>
                 <ul>
