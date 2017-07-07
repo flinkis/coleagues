@@ -55,7 +55,7 @@ module.exports = {
         } while (_.some(this.currentUsers, {name}));
 
         this.currentUsers.push({ name, uid })
-        return { name, uid };
+        return { name, uid, guest: true };
     },
 
     update(user, newUser) {

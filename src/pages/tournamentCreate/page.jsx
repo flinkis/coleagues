@@ -45,11 +45,18 @@ class TournamnetPage extends React.Component {
             this.setState({ gametypes });
         });
 
-        socket.emit('user:request', (response) => {
+        socket.emit('users:request', (response) => {
             const { users } = response;
 
             this.setState({ users });
         });
+    }
+
+    componentWillUnmount() {
+        const { socket } = this.props;
+
+        socket.off('tournament:remove', this.removeTournament);
+        socket.off('tournament:update', this.updateTournament);
     }
 
 /******************

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Validate from '../../validate';
+import Validate from '../../../helpers/validate';
 import general_style from '../../../common/general.css';
 import styles from './style.css';
 
@@ -64,7 +64,7 @@ class UserSignup extends React.Component {
                     <input type="text" id="name" placeholder="User name" value={ newUser.name } onChange={ this.inputChange('name') } />
                     <label htmlFor="email">Email:</label>
                     <input type="text" id="email" placeholder="Email" value={ newUser.email } onChange={ this.inputChange('email') } />
-                    <label htmlFor="name">Shoe sise:</label>
+                    <label htmlFor="name">Shoe size:</label>
                     <input type="number" id="size" placeholder="Size" value={ newUser.size } onChange={ this.inputChange('size') } />
                     <label htmlFor="password">Password:</label>
                     <input type="password" id="password" placeholder="Password" value={ newUser.password } onChange={ this.inputChange('password') } />

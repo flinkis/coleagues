@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-import Auth from '../../components/auth';
+import Auth from '../../helpers/auth';
 
 import ParticipantList from '../../components/list/participants/component';
 import GamesList from '../../components/list/games/component';
@@ -49,6 +49,14 @@ class TournamnetList extends React.Component {
                 this.setState({ authenticatedUser });
             }
         });
+    }
+
+    componentWillUnmount() {
+        const { socket } = this.props;
+
+        socket.off('tournament:update', this.updateTournament);
+        socket.off('game:update', this.updateGame);
+        socket.off('game:remove', this.removeGame);
     }
 
     updateTournament(tournament) {

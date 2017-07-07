@@ -1,13 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 
-import Auth from '../../components/auth';
-import LoginForm from '../../components/forms/login/component';
-import UserList from '../../components/list/users/component';
-
-import styles from './style.css';
+import Auth from '../../helpers/auth';
+import LoginForm from '../forms/login/component';
+import UserList from '../list/users/component';
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -18,35 +15,35 @@ class Sidebar extends React.Component {
             user: {},
         };
 
-        this.initialize = this.initialize.bind(this);
-
         this.handleUserLogin = this.handleUserLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
         this.userLeft = this.userLeft.bind(this);
         this.userChanged = this.userChanged.bind(this);
     }
 
-    componentDidMount() {
+    componentWillMount() {
         const { socket } = this.props;
-        const { user } = this.state;
 
-        socket.on('init', this.initialize);
         socket.on('user:left', this.userLeft);
         socket.on('user:update', this.userChanged);
 
-        Auth.handleAuthentication(socket, (authenticatedUser) => {
-            if (authenticatedUser && authenticatedUser !== user) {
-                socket.emit('user:update', { newUser: authenticatedUser });
-                socket.emit('refresh');
-                this.setState({ loggedIn: true });
-            }
+        socket.emit('user:current', (users) => {
+            this.setState({ users });
         });
-    }
 
-    initialize(response) {
-        const { user, users } = response;
-
-        this.setState({ user, users });
+        socket.emit('user:request', (user) => {
+            Auth.handleAuthentication(socket, (authenticatedUser) => {
+                if (authenticatedUser && authenticatedUser.id !== user.id) {
+                    socket.emit('user:update', { newUser: authenticatedUser });
+                    this.setState({
+                        user: authenticatedUser,
+                        loggedIn: true,
+                    });
+                } else {
+                    this.setState({ user });
+                }
+            });
+        });
     }
 
     userLeft(response) {
@@ -124,17 +121,14 @@ class Sidebar extends React.Component {
 
         return (
             <aside className="hg__right">
-                { loggedIn || <h2 className={ styles.lead }>Create an account to get started!</h2> }
-                { loggedIn || <Link className={ styles.link } to="/signup">Sign up</Link> }
+                <UserList users={ users } user={ user } />
 
-                <h2>{ !loggedIn ? 'Log In' : `Hello ${user.name}` }</h2>
+                { loggedIn ? <h3> {`Hello ${user.name}`} </h3> : <h2>Log In</h2> }
 
                 { !loggedIn ?
                     <LoginForm onLogin={ this.handleUserLogin } /> :
                     <button onClick={ this.handleLogout }>Log out</button>
                 }
-
-                <UserList users={ users } user={ user } />
             </aside>
         );
     }

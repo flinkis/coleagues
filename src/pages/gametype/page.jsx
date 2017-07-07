@@ -48,6 +48,13 @@ class GameTypePage extends React.Component {
         });
     }
 
+    componentWillUnmount() {
+        const { socket } = this.props;
+
+        socket.off('gametype:remove', this.removeGameType);
+        socket.off('gametype:update', this.updateGameType);
+    }
+
     removeGameType(response) {
         const { gametypes } = this.state;
         const { uid } = response;

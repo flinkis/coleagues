@@ -40,6 +40,12 @@ class ScorePage extends React.Component {
         });
     }
 
+    componentWillUnmount() {
+        const { socket } = this.props;
+
+        socket.off('game:update', this.updateGames);
+    }
+
     updateGames(response) {
         const { game } = this.state;
         const { params } = this.props.match;

@@ -8,6 +8,7 @@ class ScoreForm extends React.Component {
 
         this.state = {
             participants: [],
+            score: [],
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -18,35 +19,38 @@ class ScoreForm extends React.Component {
         const { game } = nextProps;
 
         if (!_.isEmpty(game)) {
-            this.setState({ participants: game.participants });
+            this.setState({
+                participants: game.participants,
+                score: game.participants.map(player => (player.score ? player.score : 0)),
+            });
         }
     }
 
     onFormSubmit(event) {
-        const { participants } = this.state;
+        const { participants, score } = this.state;
         const { onScoreChange } = this.props;
         event.preventDefault();
 
-        onScoreChange(participants);
+        onScoreChange(_.map(participants, (player, index) => ({ ...player, score: score[index] })));
     }
 
     handleChange(index) {
         return (event) => {
-            const { participants } = this.state;
-            const { type, checked, value, name } = event.target;
+            const { score } = this.state;
+            const { type, checked, value } = event.target;
 
-            participants[index] = { ...participants[index], [name]: (type === 'checkbox' ? checked : value) };
-            this.setState({ participants });
+            score[index] = type === 'checkbox' ? checked : value;
+            this.setState({ score });
         };
     }
 
     render() {
-        const { participants } = this.state;
+        const { participants, score } = this.state;
 
         const inputs = participants.map((player, index) => (
             <div key={ player.uid }>
                 <label htmlFor={ `score-${index}` }>Score for { player.name }:</label>
-                <input type="number" id={ `score-${index}` } value={ player.score } name="score" onChange={ this.handleChange(index) } />
+                <input type="number" id={ `score-${index}` } value={ score[index] } name="score" onChange={ this.handleChange(index) } />
             </div>
         ));
 

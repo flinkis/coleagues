@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import Validate from '../../validate';
+import { Link } from 'react-router-dom';
+import Validate from '../../../helpers/validate';
 import general_style from '../../../common/general.css';
 
 class LoginForm extends React.Component {
@@ -62,7 +62,7 @@ class LoginForm extends React.Component {
                     <input type="text" id="name" placeholder="User name" value={ user.name } onChange={ this.inputChange('name') } />
                     <label htmlFor="password">Password:</label>
                     <input type="password" id="password" placeholder="Password" value={ user.password } onChange={ this.inputChange('password') } />
-                    <button type="submit">Log In</button>
+                    <button type="submit">Log In</button>&nbsp;<Link to="/signup">Sign up</Link>
                 </form>
             </div>
         );

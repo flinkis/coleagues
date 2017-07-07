@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-import Validate from '../../validate';
+import Validate from '../../../helpers/validate';
 import general_style from '../../../common/general.css';
 
 class CreateTournamnentForm extends React.Component {

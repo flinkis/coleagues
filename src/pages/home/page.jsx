@@ -13,7 +13,6 @@ class HomePage extends React.Component {
             tournaments: [],
         };
 
-        this.initialize = this.initialize.bind(this);
         this.removeGame = this.removeGame.bind(this);
         this.updateGames = this.updateGames.bind(this);
         this.updateTournaments = this.updateTournaments.bind(this);
@@ -31,33 +30,31 @@ class HomePage extends React.Component {
     componentWillMount() {
         const { socket } = this.props;
 
-        socket.emit('refresh');
-    }
-
-    componentDidMount() {
-        const { socket } = this.props;
-
-        socket.on('init', this.initialize);
-
         socket.on('game:remove', this.removeGame);
         socket.on('game:update', this.updateGames);
         socket.on('tournament:update', this.updateTournaments);
         socket.on('tournament:remove', this.removeTournament);
+
+        socket.emit('game:request', (response) => {
+            const { games } = response;
+
+            this.setState({ games });
+        });
+
+        socket.emit('tournament:request', (response) => {
+            const { tournaments } = response;
+
+            this.setState({ tournaments });
+        });
     }
 
     componentWillUnmount() {
         const { socket } = this.props;
 
-        socket.off('init', this.initialize);
-    }
-
-    initialize(response) {
-        const { games, tournaments } = response;
-
-        this.setState({
-            games,
-            tournaments,
-        });
+        socket.off('game:remove', this.removeGame);
+        socket.off('game:update', this.updateGames);
+        socket.off('tournament:update', this.updateTournaments);
+        socket.off('tournament:remove', this.removeTournament);
     }
 
     removeGame(response) {

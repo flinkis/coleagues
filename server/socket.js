@@ -24,15 +24,6 @@ module.exports = (socket) => {
         newUser: currentUser
     });
 
-    socket.on('refresh', () => {
-        socket.emit('init', {
-            user: currentUser,
-            users: Users.getCurrent(),
-            games: Games.getAll(),
-            tournaments: Tournaments.getAll(),
-        })
-    });
-
     socket.on('authenticate', (data) => {
         const { token } = data;
         const unauthorized = (msg) => {
@@ -101,6 +92,7 @@ module.exports = (socket) => {
 
             if (Users.checkUsername(data)) {
                 Users.signup(currentUser, data, (uid) => {
+                    socket.emit('user:update', { user: currentUser, newUser: { name, uid }});
                     socket.broadcast.emit('user:update', { user: currentUser, newUser: { name, uid }});
                     currentUser = { name, uid };
 
@@ -127,10 +119,20 @@ module.exports = (socket) => {
         }
     });
 
-    socket.on('user:request', (callback) => {
+    socket.on('users:request', (callback) => {
         const users = Users.getAll();
 
-        Helper.testAndDoCallback(callback, { users }, 'user:request');
+        Helper.testAndDoCallback(callback, { users }, 'users:request');
+    });
+
+    socket.on('user:request', (callback) => {
+        Helper.testAndDoCallback(callback, currentUser, 'user:request');
+    });
+
+    socket.on('user:current', (callback) => {
+        const current = Users.getCurrent();
+
+        Helper.testAndDoCallback(callback, current, 'user:current')
     });
 
     socket.on('user:logout', (data) => {

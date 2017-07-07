@@ -13,6 +13,7 @@ class GamePage extends React.Component {
         };
 
         this.handleGameCreated = this.handleGameCreated.bind(this);
+        this.updateGame = this.updateGame.bind(this);
     }
 
     componentWillMount() {
@@ -24,15 +25,7 @@ class GamePage extends React.Component {
             this.setState({ game });
         });
 
-        socket.on('game:update', (game) => {
-            if (game.uid === uid) {
-                this.setState({ game });
-            }
-        });
-    }
-
-    componentDidMount() {
-        const { socket } = this.props;
+        socket.on('game:update', this.updateGame);
 
         socket.emit('gametype:request', (response) => {
             const { gametypes } = response;
@@ -40,11 +33,17 @@ class GamePage extends React.Component {
             this.setState({ gametypes });
         });
 
-        socket.emit('user:request', (response) => {
+        socket.emit('users:request', (response) => {
             const { users } = response;
 
             this.setState({ users });
         });
+    }
+
+    componentWillUnmount() {
+        const { socket } = this.props;
+
+        socket.off('game:update', this.updateGame);
     }
 
 /******************
@@ -59,6 +58,14 @@ class GamePage extends React.Component {
         socket.emit('game:update', game, () => {
             history.push('/');
         });
+    }
+
+    updateGame(game) {
+        const { uid } = this.props.match.params;
+
+        if (game.uid === uid) {
+            this.setState({ game });
+        }
     }
 
 /******************
