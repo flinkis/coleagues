@@ -45,7 +45,7 @@ class TournamnetPage extends React.Component {
             this.setState({ gametypes });
         });
 
-        socket.emit('users:request', (response) => {
+        socket.emit('user:request', (response) => {
             const { users } = response;
 
             this.setState({ users });

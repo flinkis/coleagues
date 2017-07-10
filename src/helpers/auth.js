@@ -60,10 +60,7 @@ const Auth = {
             if (err) {
                 console.error(err.name, err.message);
             } else {
-                this.setSession({
-                    accessToken,
-                    expiresAt: 4,
-                });
+                this.setSession({ accessToken });
             }
         });
     },

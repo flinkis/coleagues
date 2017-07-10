@@ -27,22 +27,21 @@ class Sidebar extends React.Component {
         socket.on('user:left', this.userLeft);
         socket.on('user:update', this.userChanged);
 
-        socket.emit('user:current', (users) => {
-            this.setState({ users });
-        });
+        Auth.handleAuthentication(socket, (authenticatedUser) => {
+            if (authenticatedUser) {
+                socket.emit('user:update', { newUser: authenticatedUser });
+                socket.emit('user:current', (response) => {
+                    const { users, user } = response;
 
-        socket.emit('user:request', (user) => {
-            Auth.handleAuthentication(socket, (authenticatedUser) => {
-                if (authenticatedUser && authenticatedUser.id !== user.id) {
-                    socket.emit('user:update', { newUser: authenticatedUser });
-                    this.setState({
-                        user: authenticatedUser,
-                        loggedIn: true,
-                    });
-                } else {
-                    this.setState({ user });
-                }
-            });
+                    this.setState({ users, user, loggedIn: true });
+                });
+            } else {
+                socket.emit('user:current', (response) => {
+                    const { users, user } = response;
+
+                    this.setState({ users, user });
+                });
+            }
         });
     }
 
@@ -54,18 +53,26 @@ class Sidebar extends React.Component {
     }
 
     userChanged(response) {
-        const { user, newUser } = response;
+        const { oldUser, newUser, loggedIn } = response;
         const { users } = this.state;
         let newUserList = users;
 
-        if (user) {
-            newUserList = _.remove(users, u => u.uid !== user.uid);
+        if (oldUser) {
+            newUserList = _.remove(users, u => u.uid !== oldUser.uid);
         }
         newUserList.push(newUser);
 
-        this.setState({
-            users: newUserList,
-        });
+        if (loggedIn) {
+            this.setState({
+                users: newUserList,
+                user: newUser,
+                loggedIn,
+            });
+        } else {
+            this.setState({
+                users: newUserList,
+            });
+        }
     }
 
 /******************

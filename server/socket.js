@@ -20,8 +20,7 @@ module.exports = (socket) => {
  *****************/
 
     socket.broadcast.emit('user:update', {
-        user: null, 
-        newUser: currentUser
+        newUser: currentUser,
     });
 
     socket.on('authenticate', (data) => {
@@ -61,7 +60,7 @@ module.exports = (socket) => {
     socket.on('user:getNewGuest', (callback) => {
         const newUser = Users.getGuestUser();
 
-        socket.broadcast.emit('user:update', { user: currentUser, newUser });
+        socket.broadcast.emit('user:update', { oldUser: currentUser, newUser });
         currentUser = newUser;
 
         Helper.testAndDoCallback(callback, { newUser }, 'user:getNewGuest');
@@ -76,7 +75,7 @@ module.exports = (socket) => {
             const { name, uid } = newUser;
 
             socket.broadcast.emit('user:update', { 
-                user: oldUser, 
+                oldUser, 
                 newUser: { name, uid }
             });
 
@@ -92,8 +91,8 @@ module.exports = (socket) => {
 
             if (Users.checkUsername(data)) {
                 Users.signup(currentUser, data, (uid) => {
-                    socket.emit('user:update', { user: currentUser, newUser: { name, uid }});
-                    socket.broadcast.emit('user:update', { user: currentUser, newUser: { name, uid }});
+                    socket.emit('user:update', { oldUser: currentUser, newUser: { name, uid }, loggedIn: true});
+                    socket.broadcast.emit('user:update', { oldUser: currentUser, newUser: { name, uid }});
                     currentUser = { name, uid };
 
                     Helper.testAndDoCallback(callback, { name, uid }, 'user:signup');
@@ -119,20 +118,16 @@ module.exports = (socket) => {
         }
     });
 
-    socket.on('users:request', (callback) => {
+    socket.on('user:request', (callback) => {
         const users = Users.getAll();
 
         Helper.testAndDoCallback(callback, { users }, 'users:request');
     });
 
-    socket.on('user:request', (callback) => {
-        Helper.testAndDoCallback(callback, currentUser, 'user:request');
-    });
-
     socket.on('user:current', (callback) => {
-        const current = Users.getCurrent();
+        const users = Users.getCurrent();
 
-        Helper.testAndDoCallback(callback, current, 'user:current')
+        Helper.testAndDoCallback(callback, { users, user: currentUser }, 'user:current')
     });
 
     socket.on('user:logout', (data) => {
