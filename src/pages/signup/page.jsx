@@ -11,11 +11,11 @@ class SignupPage extends Component {
         this.handleSignup = this.handleSignup.bind(this);
     }
 
-/******************
- *
- * Handlers
- *
- *****************/
+    /******************
+     *
+     * Handlers
+     *
+     *****************/
 
     handleSignup(newUser) {
         const { socket, history } = this.props;
@@ -29,11 +29,11 @@ class SignupPage extends Component {
         });
     }
 
-/******************
- *
- * Render
- *
- *****************/
+    /******************
+     *
+     * Render
+     *
+     *****************/
 
     render() {
         return (

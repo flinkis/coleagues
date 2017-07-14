@@ -75,11 +75,11 @@ class Sidebar extends React.Component {
         }
     }
 
-/******************
- *
- * Handlers
- *
- *****************/
+    /******************
+     *
+     * Handlers
+     *
+     *****************/
 
     handleUserLogin(data) {
         const { users, user } = this.state;
@@ -117,11 +117,11 @@ class Sidebar extends React.Component {
         });
     }
 
-/******************
- *
- * Render
- *
- *****************/
+    /******************
+     *
+     * Render
+     *
+     *****************/
 
     render() {
         const { users, user, loggedIn } = this.state;

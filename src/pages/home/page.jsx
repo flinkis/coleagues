@@ -21,11 +21,11 @@ class HomePage extends React.Component {
         this.handleGameRemoved = this.handleGameRemoved.bind(this);
     }
 
-/******************
- *
- * Setup Socket connection
- *
- *****************/
+    /******************
+     *
+     * Setup Socket connection
+     *
+     *****************/
 
     componentWillMount() {
         const { socket } = this.props;
@@ -110,11 +110,11 @@ class HomePage extends React.Component {
         };
     }
 
-/******************
- *
- * Render
- *
- *****************/
+    /******************
+     *
+     * Render
+     *
+     *****************/
 
     render() {
         const { games, tournaments } = this.state;

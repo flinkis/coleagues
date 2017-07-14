@@ -56,12 +56,11 @@ class ScorePage extends React.Component {
         }
     }
 
-
-/******************
- *
- * Handlers
- *
- *****************/
+    /******************
+     *
+     * Handlers
+     *
+     *****************/
 
     hanleScoreChange(participants) {
         const { socket, history } = this.props;

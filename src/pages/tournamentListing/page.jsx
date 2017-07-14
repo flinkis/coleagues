@@ -8,7 +8,6 @@ import ParticipantList from '../../components/list/participants/component';
 import GamesList from '../../components/list/games/component';
 
 class TournamnetList extends React.Component {
-
     constructor(props) {
         super(props);
 

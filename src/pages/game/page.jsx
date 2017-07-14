@@ -46,11 +46,11 @@ class GamePage extends React.Component {
         socket.off('game:update', this.updateGame);
     }
 
-/******************
- *
- * Handlers
- *
- *****************/
+    /******************
+     *
+     * Handlers
+     *
+     *****************/
 
     handleGameCreated(game) {
         const { socket, history } = this.props;
@@ -68,11 +68,11 @@ class GamePage extends React.Component {
         }
     }
 
-/******************
- *
- * Render
- *
- *****************/
+    /******************
+     *
+     * Render
+     *
+     *****************/
 
     render() {
         const { game, gametypes, users } = this.state;

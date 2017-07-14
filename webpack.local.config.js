@@ -12,57 +12,66 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
  * For more information, see: http://webpack.github.io/docs/configuration.html
  */
 module.exports = {
+    // Efficiently evaluate modules with source maps
+    devtool: "eval",
 
-  // Efficiently evaluate modules with source maps
-  devtool: "eval",
-
-  // Set entry point to ./src/router and include necessary files for hot load
-  entry:  [
-    "webpack-dev-server/client?http://localhost:9090",
-    "webpack/hot/only-dev-server",
-    "./src/router"
-  ],
-
-  // This will not actually create a bundle.js file in ./build. It is used
-  // by the dev server for dynamic hot loading.
-  output: {
-    path: __dirname + "/build/",
-    filename: "app.js",
-    publicPath: "http://localhost:9090/build/"
-  },
-
-  // Necessary plugins for hot load
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
-    new ExtractTextPlugin('style.css', { allChunks: true })
-  ],
-
-  // Transform source code using Babel and React Hot Loader
-  module: {
-    preLoaders: [
-    // Javascript
-      { test: /\.jsx?$/, loader: 'eslint', exclude: /node_modules/ }
+    // Set entry point to ./src/router and include necessary files for hot load
+    entry:  [
+        'webpack-dev-server/client?http://localhost:9090',
+        'webpack/hot/only-dev-server',
+        './src/router.jsx'
     ],
-    loaders: [
-      { test: /\.jsx?$/, exclude: /node_modules/, loaders: ["react-hot", "babel-loader"] },
-      { test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss-loader') }
-    ]
-  },
 
-  // Automatically transform files with these extensions
-  resolve: {
-    extensions: ['', '.js', '.jsx', '.css']
-  },
+    // This will not actually create a bundle.js file in ./build. It is used
+    // by the dev server for dynamic hot loading.
+    output: {
+        path: __dirname + "/build/",
+        filename: "app.js",
+        publicPath: "http://localhost:9090/build/"
+    },
 
-  // Additional plugins for CSS post processing using postcss-loader
-  postcss: [
-    require('autoprefixer'), // Automatically include vendor prefixes
-    require('postcss-nested') // Enable nested rules, like in Sass
-  ],
-  eslint: {
-    failOnWarning: false,
-    failOnError: true
-  },
+    // Necessary plugins for hot load
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
+        new ExtractTextPlugin('[name].css'),
+    ],
 
+    // Transform source code using Babel and React Hot Loader
+    module: {
+        rules: [
+            {
+                enforce: "pre",
+                test: /\.jsx$/,
+                exclude: /node_modules/,
+                loader: "eslint-loader"
+            },
+            {
+                test: /\.jsx$/,
+                exclude: /node_modules/,
+                loaders: [ "react-hot-loader", "babel-loader" ]
+            },
+            {
+                test: /\.css$/, 
+                use: ExtractTextPlugin.extract({
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                modules: true,
+                                importLoaders: 1,
+                                localIdentName: '[name]__[local]--[hash:base64:5]'
+                            }
+                        },
+                        { loader: 'postcss-loader', options: { config: { path: './config/postcss.config.js' } } }
+                    ]
+                })
+            }
+        ]
+    },
+
+    // Automatically transform files with these extensions
+    resolve: {
+        extensions: ['.js', '.jsx', '.css']
+    },
 }

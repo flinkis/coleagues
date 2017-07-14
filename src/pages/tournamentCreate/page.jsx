@@ -59,11 +59,11 @@ class TournamnetPage extends React.Component {
         socket.off('tournament:update', this.updateTournament);
     }
 
-/******************
-*
- * Setup Socket connection
- *
- *****************/
+    /******************
+    *
+     * Setup Socket connection
+     *
+     *****************/
 
     removeTournament(response) {
         const { tournaments } = this.state;
@@ -87,11 +87,11 @@ class TournamnetPage extends React.Component {
         this.setState({ tournaments });
     }
 
-/******************
- *
- * Handlers
- *
- *****************/
+    /******************
+     *
+     * Handlers
+     *
+     *****************/
 
     handleTournamentChange(tournament) {
         const { socket } = this.props;
@@ -143,11 +143,11 @@ class TournamnetPage extends React.Component {
         };
     }
 
-/******************
- *
- * Render
- *
- *****************/
+    /******************
+     *
+     * Render
+     *
+     *****************/
 
     render() {
         const { tournaments, tournament, gametypes, tournamentType, users } = this.state;
@@ -169,11 +169,11 @@ class TournamnetPage extends React.Component {
         return (
             <div className="hg__main">
                 <CreateTournamnentForm
-                  onTournamentChange={ this.handleTournamentChange }
-                  selectedTournament={ tournament }
-                  gameTypes={ gametypes }
-                  tournamentType={ tournamentType }
-                  users={ users }
+                    onTournamentChange={ this.handleTournamentChange }
+                    selectedTournament={ tournament }
+                    gameTypes={ gametypes }
+                    tournamentType={ tournamentType }
+                    users={ users }
                 />
 
                 <div className="block">

@@ -13,9 +13,6 @@ import { BrowserRouter } from 'react-router-dom';
 // App
 import App from './app';
 
-// Base styling
-import './common/base.css';
-
 // ID of the DOM element to mount app on
 const DOM_APP_EL_ID = 'app';
 

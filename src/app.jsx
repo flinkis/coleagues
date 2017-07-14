@@ -7,6 +7,9 @@ import SidebarRight from './components/sidebarRight/component';
 import Main from './main';
 import Footer from './components/footer/component';
 
+// Base styling
+import './common/base';
+
 // Socket
 const socket = io.connect();
 

@@ -23,11 +23,11 @@ class GameTypePage extends React.Component {
         this.updateGameType = this.updateGameType.bind(this);
     }
 
-/******************
- *
- * Setup Socket connection
- *
- *****************/
+    /******************
+     *
+     * Setup Socket connection
+     *
+     *****************/
 
     componentDidMount() {
         const { socket } = this.props;
@@ -77,11 +77,11 @@ class GameTypePage extends React.Component {
         this.setState({ gametypes });
     }
 
-/******************
- *
- * Handelers
- *
- *****************/
+    /******************
+     *
+     * Handelers
+     *
+     *****************/
 
     handleGameTypeChange(gametype) {
         const { socket } = this.props;

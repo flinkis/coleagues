@@ -52,11 +52,11 @@ class CreateTournamnentForm extends React.Component {
         this.setState({ tournament, participant });
     }
 
-/******************
- *
- * Handlers
- *
- *****************/
+    /******************
+     *
+     * Handlers
+     *
+     *****************/
 
     onFormSubmit(event) {
         const { tournament } = this.state;
@@ -141,11 +141,11 @@ class CreateTournamnentForm extends React.Component {
         };
     }
 
-/******************
- *
- * Render
- *
- *****************/
+    /******************
+     *
+     * Render
+     *
+     *****************/
 
     render() {
         const { tournament, participant, error } = this.state;

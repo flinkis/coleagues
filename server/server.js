@@ -1,5 +1,3 @@
-import express from 'express';
-
 /************************************************************
  *
  * Express routes for:
@@ -8,6 +6,8 @@ import express from 'express';
  *   - index.html
  *
  ************************************************************/
+import express from 'express';
+
 const app = express();
 const path = require('path');
 
@@ -21,11 +21,11 @@ app.get('/app.js', (req, res) => {
 });
 
 // Serve aggregate stylesheet depending on environment
-app.get('/style.css', (req, res) => {
+app.get('/main.css', (req, res) => {
     if (process.env.PRODUCTION) {
-        res.sendFile(path.join(__dirname, '../build', 'style.css'));
+        res.sendFile(path.join(__dirname, '../build', 'main.css'));
     } else {
-        res.redirect('//localhost:9090/build/style.css');
+        res.redirect('//localhost:9090/build/main.css');
     }
 });
 

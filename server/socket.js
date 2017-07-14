@@ -11,17 +11,33 @@ const Helper = require('./helpers/general');
 // export function for listening to the socket
 module.exports = (socket) => {
     const secret = 'TOPSECRETTTTT';
-    let currentUser = Users.getGuestUser();
 
 /******************
  *
- * Emit Init and send ALL data to client
+ * Create user and send ALL data to client
  *
  *****************/
+
+    let currentUser = Users.getGuestUser();
 
     socket.broadcast.emit('user:update', {
         newUser: currentUser,
     });
+
+    socket.on('disconnect', () => {
+        if (!!currentUser) {
+            const { uid } = currentUser;
+
+            Users.remove(uid);
+            socket.broadcast.emit('user:left', { uid });
+        }
+    });
+
+/******************
+ *
+ * Authenticate
+ *
+ *****************/
 
     socket.on('authenticate', (data) => {
         const { token } = data;
@@ -42,18 +58,9 @@ module.exports = (socket) => {
         });
     });
 
-    socket.on('disconnect', () => {
-        if (!!currentUser) {
-            const { uid } = currentUser;
-
-            Users.remove(uid);
-            socket.broadcast.emit('user:left', { uid });
-        }
-    });
-
 /******************
  *
- * User
+ * User events
  *
  *****************/
 
@@ -139,7 +146,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * Game
+ * Game events
  *
  *****************/
 
@@ -180,7 +187,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * GameType
+ * GameType events
  *
  *****************/
 
@@ -229,7 +236,7 @@ module.exports = (socket) => {
 
 /******************
  *
- * Tournament
+ * Tournament events
  *
  *****************/
 

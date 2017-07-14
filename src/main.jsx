@@ -7,10 +7,10 @@ const Main = props => (
     <Switch>
         { routes(props).map(route => (
             <Route
-              key={ route.id }
-              path={ route.path }
-              exact={ route.exact }
-              component={ route.main }
+                key={ route.id }
+                path={ route.path }
+                exact={ route.exact }
+                component={ route.main }
             />
         )) }
     </Switch>

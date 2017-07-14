@@ -1,6 +1,4 @@
 module.exports = {
-    "extends": "airbnb",
-    
     "plugins": [
         "react",
         "jsx-a11y",
@@ -14,30 +12,18 @@ module.exports = {
         'commonjs': true
     },
 
-    "ecmaFeatures": {
-        "arrowFunctions": true,
-        "binaryLiterals": true,
-        "blockBindings": true,
-        "classes": true,
-        "defaultParams": true,
-        "destructuring": true,
-        "forOf": true,
-        "generators": true,
-        "modules": true,
-        "objectLiteralComputedProperties": true,
-        "objectLiteralDuplicateProperties": true,
-        "objectLiteralShorthandMethods": true,
-        "objectLiteralShorthandProperties": true,
-        "octalLiterals": true,
-        "regexUFlag": true,
-        "regexYFlag": true,
-        "spread": true,
-        "superInFunctions": true,
-        "templateStrings": true,
-        "unicodeCodePointEscapes": true,
-        "globalReturn": true,
-        "jsx": true
+    "parser": "babel-eslint",
+    
+    "parserOptions": {
+        "ecmaVersion": 7,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "sourceType": "module",
     },
+
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
 
     "rules": {
 
@@ -46,7 +32,7 @@ module.exports = {
         //
         // The following rules point out areas where you might have made mistakes.
         //
-        "comma-dangle": 2, // disallow or enforce trailing commas
+        "comma-dangle": 0, // disallow or enforce trailing commas
         "no-cond-assign": 2, // disallow assignment in conditional expressions
         "no-console": 0, // disallow use of console (off by default in the node environment)
         "no-constant-condition": 2, // disallow use of constant expressions in conditions
@@ -158,7 +144,7 @@ module.exports = {
         //
         // These rules are purely matters of style and are quite subjective.
         //
-        "indent": [1, 4], // this option sets a specific tab width for your code (off by default)
+        "indent": 2, // this option sets a specific tab width for your code (off by default)
         "brace-style": 1, // enforce one true brace style (off by default)
         "camelcase": 0, // require camel case names
         "comma-spacing": [1, {"before": false, "after": true}], // enforce spacing before and after comma

@@ -46,11 +46,11 @@ class GameForm extends React.Component {
         this.setState({ new_game, participant });
     }
 
-/******************
- *
- * Handlers
- *
- *****************/
+    /******************
+     *
+     * Handlers
+     *
+     *****************/
 
     onFormSubmit(event) {
         const { new_game } = this.state;
@@ -111,11 +111,11 @@ class GameForm extends React.Component {
         this.setState({ participant });
     }
 
-/******************
- *
- * Render
- *
- *****************/
+    /******************
+     *
+     * Render
+     *
+     *****************/
 
     render() {
         const { new_game, participant, error } = this.state;

@@ -7,20 +7,23 @@
 
 button,
 :global(.button) {
-	display: inline-block;
-	background-color: #70C1B3;
-	border: 1px solid #70C1B3;
-	color: white;
-	font-size: 0.75rem;
-	padding: 5px 20px;
-	outline: none;
-	margin: 5px 5px 5px 0;
+    background-color: #70C1B3;
+    border: 1px solid #70C1B3;
+    color: white;
+    display: inline-block;
+    font-size: 0.75rem;
+    margin: 5px 5px 5px 0;
+    outline: none;
+    padding: 5px 20px;
+    text-shadow: 0px 1px 1px rgba(0,0,0,0.5);
+    box-shadow: 0px 5px 25px -5px rgba(0,0,0,0.5);
+    cursor: pointer;
 }
 
 button:hover,
 :global(.button):hover {
-	cursor: pointer;
-	opacity: 0.9;
+    cursor: pointer;
+    opacity: 0.9;
 }
 
 
@@ -28,16 +31,16 @@ button:hover,
 --------------------------------------------- */
 
 label {
-	font-size: 0.75rem;
-	display: block;
-	margin: 10px 0 5px;
+    display: block;
+    font-size: 0.75rem;
+    margin: 10px 0 5px;
 }
 
 input,
 textarea {
-	background-color: #ebebeb;
-	border: 1px solid #aaa;
-	font-size: 0.75rem;
-	padding: 5px 10px;
-	max-width: 100%;
+    background-color: #ebebeb;
+    border: 1px solid #aaa;
+    font-size: 0.75rem;
+    max-width: 100%;
+    padding: 5px 10px;
 }
